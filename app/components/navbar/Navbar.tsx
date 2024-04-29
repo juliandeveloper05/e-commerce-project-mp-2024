@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Navbar.module.css';
-import { montserrat } from '../../ui/fonts';
+import { lusitana } from '../../ui/fonts';
 import { FaChevronDown } from 'react-icons/fa';
 import ShoppingCart from '../navbar/shopping-cart/ShoppingCart';
 import HamburgerIcon from './Hamburguer-Menu/HamburguerIcon';
@@ -18,7 +18,7 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`${montserrat.className} ${styles.navbar}  sticky top-0 mx-auto justify-between px-5 py-3 shadow-lg lg:px-20 `}
+      className={`${lusitana.className} ${styles.navbar}  sticky top-0 mx-auto justify-between px-5 py-3 shadow-lg lg:px-20 `}
     >
       {/* LOGO */}
       <div className="px-5">

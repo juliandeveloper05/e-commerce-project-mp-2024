@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Navbar.module.css';
-import { lusitana } from '../../ui/fonts';
+import { poppins } from '../../ui/fonts';
 import { FaChevronDown } from 'react-icons/fa';
 import ShoppingCart from '../navbar/shopping-cart/ShoppingCart';
 import HamburgerIcon from './Hamburguer-Menu/HamburguerIcon';
@@ -18,7 +18,7 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`${lusitana.className} ${styles.navbar}  sticky top-0 mx-auto justify-between px-5 py-3 shadow-lg lg:px-20 `}
+      className={`${poppins.className} ${styles.navbar} sticky top-0 mx-auto justify-between px-5 py-3 text-base shadow-lg lg:px-6 `}
     >
       {/* LOGO */}
       <div className="px-5">
@@ -38,11 +38,11 @@ const Navbar = () => {
 
       {/* DESKTOP LINKS */}
 
-      <div className={styles.desktopLinks}>
+      <div className={`${styles.desktopLinks} `}>
         {/*Separate the navbar buttons with the shopping cart on the desktop*/}
 
         <div className="px-22 lg:-mr-5">
-          <ul className={styles.navLinkList}>
+          <ul className={`${styles.navLinkList} lg:mx-10`}>
             <li>
               <Link href="/" legacyBehavior>
                 <a className={styles.navLinkItem}>HOME</a>

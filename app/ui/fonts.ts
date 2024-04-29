@@ -1,8 +1,8 @@
-import { Lusitana } from 'next/font/google';
+import { Belgrano } from 'next/font/google';
 
-const lusitana = Lusitana({
+const poppins = Belgrano({
   subsets: ['latin'],
-  weight: ['400', '700'],
+  weight: ['400', '400'],
 });
 
-export { lusitana };
+export { poppins };

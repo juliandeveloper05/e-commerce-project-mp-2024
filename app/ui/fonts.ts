@@ -1,8 +1,8 @@
 import { Belgrano } from 'next/font/google';
 
-const poppins = Belgrano({
+const lusitana = Belgrano({
   subsets: ['latin'],
   weight: ['400', '400'],
 });
 
-export { poppins };
+export { lusitana };

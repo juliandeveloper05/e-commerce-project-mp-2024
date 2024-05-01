@@ -4,10 +4,12 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Navbar.module.css';
-import { lusitana } from '../../ui/fonts';
 import { FaChevronDown } from 'react-icons/fa';
 import ShoppingCart from '../navbar/shopping-cart/ShoppingCart';
 import HamburgerIcon from './Hamburguer-Menu/HamburguerIcon';
+import { Poppins } from 'next/font/google';
+
+const poppins = Poppins({ subsets: ['latin'], weight: ['400', '700'] });
 
 const Navbar = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -18,7 +20,7 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`${lusitana.className} ${styles.navbar} sticky top-0 mx-auto justify-between px-5 py-3 text-base shadow-lg lg:px-6 `}
+      className={`${poppins.className} ${styles.navbar} sticky top-0 mx-auto justify-between px-5 py-3 shadow-lg lg:px-6 `}
     >
       {/* LOGO */}
       <div className="px-5">
@@ -42,36 +44,40 @@ const Navbar = () => {
         {/*Separate the navbar buttons with the shopping cart on the desktop*/}
 
         <div className="px-22 lg:-mr-5">
-          <ul className={`${styles.navLinkList} lg:mx-10`}>
+          <ul className={`${styles.navLinkList} text-slate-700 lg:mx-10`}>
             <li>
               <Link href="/" legacyBehavior>
-                <a className={styles.navLinkItem}>HOME</a>
+                <a className={styles.navLinkItem}>PERFIL</a>
               </Link>
             </li>
             <li>
               <Link href="/products" legacyBehavior>
-                <a className={styles.navLinkItem}>ALL PRODUCTS</a>
+                <a className={styles.navLinkItem}>TODOS LOS PRODUCTOS</a>
               </Link>
             </li>
             <li>
               <Link href="/about" legacyBehavior>
-                <a className={styles.navLinkItem}>ABOUT MP</a>
+                <a className={styles.navLinkItem}>SOBRE MP</a>
               </Link>
             </li>
             <li>
               <Link href="/contact" legacyBehavior>
-                <a className={styles.navLinkItem}>CONTACT</a>
+                <a className={styles.navLinkItem}>CONTACTO</a>
               </Link>
             </li>
             <li>
-              <Link href="/account" legacyBehavior>
-                <a className={styles.navLinkItem}>
-                  ACCOUNT
-                  <span>
-                    <FaChevronDown />
-                  </span>
-                </a>
-              </Link>
+              <div className="flex items-center space-x-2">
+                <Link href="/account" legacyBehavior>
+                  <a
+                    className={`${styles.navLinkItem} item-center flex space-x-1`}
+                  >
+                    CUENTA
+                    <span>
+                      <FaChevronDown />
+                    </span>
+                  </a>
+                </Link>
+              </div>
             </li>
           </ul>
         </div>
@@ -114,7 +120,7 @@ const Navbar = () => {
               <li>
                 <Link href="/account" legacyBehavior>
                   <a className={styles.navLinkItem}>
-                    ACCOUNT
+                    Cuenta
                     <span>
                       <FaChevronDown />
                     </span>

@@ -32,10 +32,9 @@
 
   .navLinkItem {
     display: flex;
-    margin-left: 1rem;
+    margin-left: 2rem;
     text-decoration: none;
-    color: #000;
-    transition: color 0.3s;
+
     align-items: center;
   }
 

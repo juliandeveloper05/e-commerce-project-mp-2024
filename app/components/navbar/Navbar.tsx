@@ -20,7 +20,7 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`${poppins.className} ${styles.navbar} sticky top-0 mx-auto justify-between px-5 py-3 shadow-lg lg:px-6 `}
+      className={`${poppins.className} ${styles.navbar}  mx-auto justify-between px-5 py-3 shadow-lg lg:px-6 `}
     >
       {/* LOGO */}
       <div className="px-5">

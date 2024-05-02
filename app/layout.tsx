@@ -1,6 +1,9 @@
 import './ui/global.css';
-
+import Footer from './components/footer/Footer';
 import Navbar from './components/navbar/Navbar';
+import { Poppins } from 'next/font/google';
+
+const poppins = Poppins({ subsets: ['latin'], weight: ['400', '700'] });
 
 export default function RootLayout({
   children,
@@ -8,11 +11,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
-        <Navbar />
-        {children}
+    <>
+      <body className={poppins.className}>
+        <div>
+          <Navbar />
+          <main>{children}</main>
+          <Footer />
+        </div>
       </body>
-    </html>
+    </>
   );
 }

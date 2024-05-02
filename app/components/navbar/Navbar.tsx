@@ -20,7 +20,19 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`${poppins.className} ${styles.navbar}  mx-auto justify-between px-5 py-3 shadow-lg lg:px-6 `}
+      className={`${poppins.className} ${styles.navbar}
+        left-0
+        right-0
+        top-0 
+        z-50 
+        mx-auto 
+        justify-between 
+        bg-white 
+        px-5 
+        py-3 
+        shadow-lg 
+        lg:px-6
+        `}
     >
       {/* LOGO */}
       <div className="px-5">

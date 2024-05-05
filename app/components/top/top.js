@@ -1,3 +1,5 @@
+'use client';
+
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
 import sassStyles from './top.module.scss';
@@ -5,6 +7,8 @@ import { MdSecurity } from 'react-icons/md';
 import { BsSuitHeart } from 'react-icons/bs';
 import { RiAccountPinCircleLine, RiArrowDropDownFill } from 'react-icons/ri';
 import Link from 'next/link';
+import { useState } from 'react';
+import UserMenu from '@/app/components/navbar/UserMenu/UserMenu';
 
 export default function Top() {
   return (

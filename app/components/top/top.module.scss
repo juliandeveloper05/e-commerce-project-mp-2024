@@ -1,8 +1,7 @@
-$shadow-1: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+$shadow-1: 0 2px 4px rgba(0, 0, 0, 0.1);
 
 .top {
   background: #ece5e5;
-  border-top: 1px solid #000000;
   border-bottom: 1px solid #eee;
   &_container {
     max-width: 95%;
@@ -16,6 +15,7 @@ $shadow-1: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     display: flex;
     gap: 15px;
     li {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -44,16 +44,42 @@ $shadow-1: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
       span {
         font-size: 12px;
       }
+      &::after {
+        content: '';
+        position: absolute;
+        right: -8px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1px;
+        height: 20px;
+        background-color: #999;
+      }
+      &:last-of-type {
+        &::after {
+          display: none;
+        }
+      }
+      &:hover {
+        span {
+          color: #ff02ab;
+        }
+        svg {
+          fill: #ff02ab;
+        }
+      }
     }
   }
-  &::after {
-    counter-reset: '';
-    position: absolute;
-    right: -8px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 1px;
-    height: 20px;
-    background: #ccc;
+}
+
+@media (max-width: 670px) {
+  .top_list {
+    justify-content: space-between;
+    margin-right: 3.5rem;
+  }
+  .top_list li:nth-of-type(1),
+  .top_list li:nth-of-type(2),
+  .top_list li:nth-of-type(3),
+  .top_list li:nth-of-type(4) {
+    display: none;
   }
 }

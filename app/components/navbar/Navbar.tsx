@@ -8,6 +8,7 @@ import { FaChevronDown } from 'react-icons/fa';
 import ShoppingCart from '../navbar/shopping-cart/ShoppingCart';
 import HamburgerIcon from './Hamburguer-Menu/HamburguerIcon';
 import { Poppins } from 'next/font/google';
+import UserMenu from '@/app/components/navbar/UserMenu/UserMenu';
 
 const poppins = Poppins({ subsets: ['latin'], weight: ['400', '700'] });
 
@@ -77,20 +78,6 @@ const Navbar = () => {
                 <a className={styles.navLinkItem}>CONTACTO</a>
               </Link>
             </li>
-            <li>
-              <div className="flex items-center space-x-2">
-                <Link href="/account" legacyBehavior>
-                  <a
-                    className={`${styles.navLinkItem} item-center flex space-x-1`}
-                  >
-                    CUENTA
-                    <span>
-                      <FaChevronDown />
-                    </span>
-                  </a>
-                </Link>
-              </div>
-            </li>
           </ul>
         </div>
         {/*Extra Container*/}
@@ -127,16 +114,6 @@ const Navbar = () => {
               <li>
                 <Link href="/contact" legacyBehavior>
                   <a className={styles.navLinkItem}>CONTACT</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="/account" legacyBehavior>
-                  <a className={styles.navLinkItem}>
-                    Cuenta
-                    <span>
-                      <FaChevronDown />
-                    </span>
-                  </a>
                 </Link>
               </li>
             </ul>

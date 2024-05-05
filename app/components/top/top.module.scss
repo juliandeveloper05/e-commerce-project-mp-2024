@@ -1,0 +1,59 @@
+$shadow-1: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+
+.top {
+  background: #ece5e5;
+  border-top: 1px solid #000000;
+  border-bottom: 1px solid #eee;
+  &_container {
+    max-width: 95%;
+    margin: 0 auto;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  &_list {
+    display: flex;
+    gap: 15px;
+    li {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      color: #252323;
+      .flex {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        svg {
+          transform: scale(1.2);
+          margin-right: 3px;
+        }
+      }
+      img {
+        width: 28px;
+        height: 28px;
+        object-fit: cover;
+        border-radius: 50%;
+      }
+      svg {
+        width: 20px;
+        height: 20px;
+        fill: #1f1d1d;
+      }
+      span {
+        font-size: 12px;
+      }
+    }
+  }
+  &::after {
+    counter-reset: '';
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 20px;
+    background: #ccc;
+  }
+}

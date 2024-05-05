@@ -17,15 +17,6 @@ export default function Top() {
         <div></div>
         <ul className={sassStyles.top_list}>
           <li>
-            <img
-              src="https://media.istockphoto.com/id/1343677863/es/vector/vector-de-bandera-circular-de-argentina-sobre-fondo-blanco.jpg?s=612x612&w=0&k=20&c=RAIOJREjlHdV_nQP6Ay05FTrfmefVeJZGkpGeaJ0660="
-              alt="Bandera de Argentina"
-            />
-
-            <span>Argentina / Peso argentino</span>
-          </li>
-
-          <li>
             <MdSecurity />
             <span>Protección al consumidor</span>
           </li>
@@ -40,7 +31,7 @@ export default function Top() {
 
           <li>
             <BsSuitHeart />
-            <span>Lista Blanca</span>
+            <span>Favoritos</span>
           </li>
 
           <li>

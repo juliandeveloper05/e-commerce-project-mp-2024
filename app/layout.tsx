@@ -4,8 +4,14 @@ import Navbar from './components/navbar/Navbar';
 import Top from './components/top/top';
 import { Poppins } from 'next/font/google';
 import styles from './layout.module.scss';
+import { Metadata } from 'next';
 
 const poppins = Poppins({ subsets: ['latin'], weight: ['400', '700'] });
+
+export const metadata: Metadata = {
+  title: 'Maria Pancha | E-Commerce',
+  description: 'Ecommerce app',
+};
 
 export default function RootLayout({
   children,

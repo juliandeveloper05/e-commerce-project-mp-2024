@@ -3,7 +3,6 @@ import Footer from './components/footer/Footer';
 import Navbar from './components/navbar/Navbar';
 import Top from './components/top/top';
 import { Poppins, Roboto } from 'next/font/google';
-import styles from './layout.module.scss';
 import { Metadata } from 'next';
 
 const poppins = Poppins({ subsets: ['latin'], weight: ['400', '700'] });

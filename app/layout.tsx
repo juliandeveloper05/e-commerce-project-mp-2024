@@ -2,11 +2,12 @@ import './ui/global.css';
 import Footer from './components/footer/Footer';
 import Navbar from './components/navbar/Navbar';
 import Top from './components/top/top';
-import { Poppins } from 'next/font/google';
+import { Poppins, Roboto } from 'next/font/google';
 import styles from './layout.module.scss';
 import { Metadata } from 'next';
 
 const poppins = Poppins({ subsets: ['latin'], weight: ['400', '700'] });
+const roboto = Roboto({ subsets: ['latin'], weight: ['400', '500', '700'] });
 
 export const metadata: Metadata = {
   title: 'Maria Pancha | E-Commerce',
@@ -21,12 +22,11 @@ export default function RootLayout({
   return (
     <>
       <body className={poppins.className}>
-        <header className={styles.header}>
+        <section>
           <Top />
           <Navbar />
-        </header>
-
-        <main>{children}</main>
+          <main className={`${roboto.className}`}>{children}</main>
+        </section>
         <Footer />
       </body>
     </>

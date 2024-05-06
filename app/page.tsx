@@ -9,7 +9,10 @@ export default function Page() {
 
       <div className="py-8">
         <h1 className="my-5 text-4xl font-semibold">
-          Abraza la calidez, escapa del frío con estilo
+          Abraza la calidez, escapa del frío con{' '}
+          <span className="from-primary to-secondary bg-gradient-to-r bg-clip-text text-transparent ">
+            MP PANTUFLONES
+          </span>
         </h1>
         <p className="my-6 text-gray-500">
           Experimenta la calidez y el estilo con nuestras pantuflas diseñadas

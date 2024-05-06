@@ -13,6 +13,7 @@ const config: Config = {
       },
       colors: {
         primary: '#f13a01',
+        secondary: '#ffa500',
       },
     },
     keyframes: {

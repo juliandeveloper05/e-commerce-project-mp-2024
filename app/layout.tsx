@@ -11,6 +11,9 @@ const roboto = Roboto({ subsets: ['latin'], weight: ['400', '500', '700'] });
 export const metadata: Metadata = {
   title: 'Maria Pancha | E-Commerce',
   description: 'Ecommerce app',
+  icons: {
+    icon: '/maria-pancha-logo.jpg',
+  },
 };
 
 export default function RootLayout({

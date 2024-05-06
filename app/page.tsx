@@ -1,14 +1,15 @@
 import React from 'react';
 import Image from 'next/image';
 import Right from '@/app/ui/Right';
+import FancyButton from './ui/Fancy-Button';
 
 export default function Page() {
   return (
-    <main className="grid grid-cols-1 items-center gap-8 p-14 md:grid-cols-2">
+    <main className="hero grid grid-cols-1 items-center gap-8 p-14 md:grid-cols-2">
       {/*TEXTO*/}
 
       <div className="py-8">
-        <h1 className="my-5 text-4xl font-semibold">
+        <h1 className="leading-noose my-5 text-4xl font-semibold">
           Abraza la calidez, escapa del frío con{' '}
           <span className="from-primary to-secondary bg-gradient-to-r bg-clip-text text-transparent ">
             MP PANTUFLONES
@@ -22,15 +23,8 @@ export default function Page() {
 
         {/*BOTONES*/}
 
-        <div className="flex flex-col justify-start gap-4 px-12  md:flex-row">
-          <button className="bg-primary flex items-center gap-2 rounded-full px-4 py-2 text-sm uppercase text-white md:px-8">
-            Compre ya
-            <Right className="h-6 w-6" />
-          </button>
-          <button className="flex gap-2 rounded-full  px-2 py-2 font-semibold text-gray-800 md:px-8">
-            Contactanos
-            <Right className="h-6 w-6" />
-          </button>
+        <div className="flex justify-center md:block">
+          <FancyButton text="Última Colección" icon={undefined}></FancyButton>
         </div>
       </div>
 
@@ -44,6 +38,7 @@ export default function Page() {
           width={480}
           height={720}
           layout="responsive"
+          className="rounded-full"
         />
       </div>
     </main>

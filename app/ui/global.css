@@ -3,3 +3,23 @@
 @tailwind utilities;
 
 /*-------Page--------- */
+.hero {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 247, 205, 0.1),
+    rgba(255, 255, 255, 0.02) 90%
+  );
+}
+
+.hero-latest-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  width: 310px;
+  height: 70px;
+  border-radius: 75px;
+  margin-top: 30px;
+  font-size: 22px;
+  font-weight: 500;
+}

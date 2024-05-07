@@ -29,8 +29,10 @@ export default function RootLayout({
           <Navbar />
           <main className={`${roboto.className}`}>{children}</main>
         </section>
-        <Footer />
       </body>
+      <footer className={poppins.className}>
+        <Footer />
+      </footer>
     </>
   );
 }

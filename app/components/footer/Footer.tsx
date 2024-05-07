@@ -4,10 +4,11 @@ import FooterList from './FooterList';
 import Link from 'next/link';
 import { MdFacebook } from 'react-icons/md';
 import { FaInstagram } from 'react-icons/fa';
+import Payment from './Payment';
 
 const Footer = () => {
   return (
-    <footer className="my-5 mt-16 bg-slate-700 text-sm text-slate-200">
+    <footer className=" mt-2 bg-slate-700 text-sm text-slate-200">
       <Container>
         <div className="flex flex-col justify-between pb-8 pt-16 md:flex-row">
           <FooterList>
@@ -80,6 +81,7 @@ const Footer = () => {
                 </a>
               </Link>
             </div>
+            <Payment className={'mt-0'} />
           </FooterList>
         </div>
       </Container>

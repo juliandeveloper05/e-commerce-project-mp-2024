@@ -5,8 +5,17 @@ import Top from './components/top/top';
 import { Poppins, Roboto } from 'next/font/google';
 import { Metadata } from 'next';
 
-const poppins = Poppins({ subsets: ['latin'], weight: ['400', '700'] });
-const roboto = Roboto({ subsets: ['latin'], weight: ['400', '500', '700'] });
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-poppins',
+});
+
+const roboto = Roboto({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  variable: '--font-roboto',
+});
 
 export const metadata: Metadata = {
   title: 'Maria Pancha | E-Commerce',
@@ -22,17 +31,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
-      <body className={poppins.className}>
+    <html lang="en" className={`${poppins.variable} ${roboto.variable}`}>
+      <body>
         <section>
           <Top />
           <Navbar />
-          <main className={`${roboto.className}`}>{children}</main>
+          <main>{children}</main>
         </section>
-      </body>
-      <footer className={poppins.className}>
         <Footer />
-      </footer>
-    </>
+      </body>
+    </html>
   );
 }

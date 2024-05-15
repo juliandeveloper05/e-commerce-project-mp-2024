@@ -11,7 +11,7 @@ export default function Page() {
       <div className="py-8">
         <h1 className="leading-noose my-5 text-4xl font-semibold">
           Abraza la calidez, escapa del frío con{' '}
-          <span className="from-primary to-secondary bg-gradient-to-r bg-clip-text text-transparent ">
+          <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent ">
             MP PANTUFLONES
           </span>
         </h1>
@@ -30,7 +30,7 @@ export default function Page() {
 
       {/*IMAGEN*/}
 
-      <div className="relative mx-auto md:h-[400px] md:w-[400px]">
+      <div className="h-45 relative mx-auto md:h-[400px] md:w-[400px]">
         <Image
           src="/logo3.jpg"
           alt="pantuflas"

@@ -2,18 +2,21 @@ import Link from 'next/link';
 import React from 'react';
 import Image from 'next/image';
 
-const ProductCard = () => {
+const ProductCard = ({ imageSrc, name, price }) => {
   return (
-    <Link href="/product/1">
-      <Image
-        className="w-full"
-        src="/productCard/product1.webp"
-        alt="Product Image"
-        width={500}
-        height={500}
-      />
-      <div className="p-4 text-black/[0.9]">
-        <h2 className="text-lg font-medium">Product Name</h2>
+    <Link href="/" className="block">
+      <div className="overflow-hidden rounded-lg bg-white shadow-md">
+        <Image
+          className="h-21 w-full object-cover"
+          src={imageSrc}
+          alt={name}
+          width={300}
+          height={200}
+        />
+        <div className="p-4">
+          <h3 className="mb-2 text-lg font-semibold">{name}</h3>
+          <p className="text-gray-600">${price.toFixed(2)}</p>
+        </div>
       </div>
     </Link>
   );

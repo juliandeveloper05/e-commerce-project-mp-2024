@@ -39,16 +39,22 @@ export default function RootLayout({
           <Navbar />
           <main>{children}</main>
 
-          <div className="my-14 grid grid-cols-1 gap-5 px-5 md:grid-cols-2 md:px-0 lg:grid-cols-3">
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
+          <div className=" mx-auto my-14 grid max-w-7xl gap-8 px-4 py-12 sm:grid-cols-2 lg:grid-cols-3">
+            <ProductCard
+              imageSrc="/productCard/pantufla3.jpg"
+              name="Pantufla Bob Esponja"
+              price={4000}
+            />
+            <ProductCard
+              imageSrc="/productCard/pantufla1.jpg"
+              name="Pantufla Kitty"
+              price={4000}
+            />
+            <ProductCard
+              imageSrc="/productCard/pantufla2.jpg"
+              name="Pantufla Rolling Stone"
+              price={4000}
+            />
           </div>
         </section>
         <Footer />

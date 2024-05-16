@@ -55,6 +55,36 @@ export default function RootLayout({
               name="Pantufla Rolling Stone"
               price={4000}
             />
+            <ProductCard
+              imageSrc="/productCard/pantufla4.jpg"
+              name="Pantufla Rose Cat"
+              price={4000}
+            />
+            <ProductCard
+              imageSrc="/productCard/pantufla5.jpg"
+              name="Pantufla Lilo"
+              price={4000}
+            />
+            <ProductCard
+              imageSrc="/productCard/pantufla6.jpg"
+              name="Pantufla Ojo Turco"
+              price={4000}
+            />
+            <ProductCard
+              imageSrc="/productCard/pantufla7.jpg"
+              name="Pantufla Pantera Rosa"
+              price={4000}
+            />
+            <ProductCard
+              imageSrc="/productCard/pantufla8.jpg"
+              name="Pantufla Harry Potter"
+              price={4000}
+            />
+            <ProductCard
+              imageSrc="/productCard/pantufla9.jpg"
+              name="Pantufla Hombre Araña"
+              price={4000}
+            />
           </div>
         </section>
         <Footer />

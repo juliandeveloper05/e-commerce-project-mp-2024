@@ -2,6 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import Right from '@/app/ui/Right';
 import FancyButton from './ui/Fancy-Button';
+import Link from 'next/link';
 
 export default function Page() {
   return (
@@ -24,7 +25,7 @@ export default function Page() {
         {/*BOTONES*/}
 
         <div className="flex justify-center md:block">
-          <FancyButton text="Última Colección" icon={undefined}></FancyButton>
+          <FancyButton text="Última Colección" icon={undefined} />
         </div>
       </div>
 
@@ -37,8 +38,7 @@ export default function Page() {
           objectFit="contain"
           width={480}
           height={720}
-          layout="responsive"
-          className="rounded-full"
+          className="cover"
         />
       </div>
     </main>

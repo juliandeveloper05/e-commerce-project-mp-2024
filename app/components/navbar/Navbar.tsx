@@ -4,11 +4,9 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Navbar.module.css';
-import { FaChevronDown } from 'react-icons/fa';
 import ShoppingCart from '../navbar/shopping-cart/ShoppingCart';
 import HamburgerIcon from './Hamburguer-Menu/HamburguerIcon';
 import { Poppins } from 'next/font/google';
-import UserMenu from '@/app/components/navbar/UserMenu/UserMenu';
 
 const poppins = Poppins({ subsets: ['latin'], weight: ['400', '700'] });
 
@@ -59,12 +57,7 @@ const Navbar = () => {
         <div className="px-22 lg:-mr-5">
           <ul className={`${styles.navLinkList} text-slate-700 lg:mx-10`}>
             <li>
-              <Link href="/" legacyBehavior>
-                <a className={styles.navLinkItem}>PERFIL</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="/products" legacyBehavior>
+              <Link href="/#primer-producto" legacyBehavior>
                 <a className={styles.navLinkItem}>TODOS LOS PRODUCTOS</a>
               </Link>
             </li>

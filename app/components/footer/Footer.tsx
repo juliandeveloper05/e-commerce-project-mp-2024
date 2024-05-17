@@ -13,10 +13,10 @@ const Footer = () => {
         <div className="flex flex-col justify-between pb-8 pt-16 md:flex-row">
           <FooterList>
             <h3 className="mb-2 text-base font-bold">Nuestra Pagina</h3>
-            <Link href="/contact" legacyBehavior>
+            <Link href="/" legacyBehavior>
               <a className="hover:text-[#ff02ab]">Perfil de MP</a>
             </Link>
-            <Link href="/products" legacyBehavior>
+            <Link href="/#primer-producto" legacyBehavior>
               <a className="hover:text-[#ff02ab] ">Todos los Productos</a>
             </Link>
             <Link href="/about" legacyBehavior>

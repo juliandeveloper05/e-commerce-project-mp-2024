@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 export default function Page() {
   return (
-    <main className="hero grid grid-cols-1 items-center gap-8 p-14 md:grid-cols-2">
+    <main className="hero grid grid-cols-1 items-center gap-8  p-14 md:grid-cols-2">
       {/*TEXTO*/}
 
       <div className="py-8">

@@ -21,8 +21,14 @@ export async function connectDb() {
   }
 
   if (!process.env.MONGODB_URL) {
+    console.log('MONGODB_URL is not defined in the environment variables');
     throw new Error('MONGODB_URL is not defined in the environment variables');
   }
+
+  console.log(
+    'Trying to connect to MongoDB with URL:',
+    process.env.MONGODB_URL,
+  );
 
   const db = await mongoose.connect(process.env.MONGODB_URL, {
     useNewUrlParser: true,
@@ -32,3 +38,17 @@ export async function connectDb() {
   console.log('New connection to the database');
   connection.isConnected = db.connections[0].readyState;
 }
+
+export async function disconnectDb() {
+  if (connection.isConnected) {
+    if (process.env.NODE_END === 'production') {
+      await mongoose.disconnect();
+      connection.isConnected = false;
+    } else {
+      console.log('not disconnecting from the database');
+    }
+  }
+}
+
+const db = { connectDb, disconnectDb };
+export default db;

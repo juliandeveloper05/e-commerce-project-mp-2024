@@ -1,18 +1,8 @@
-/** @type {import('next').NextConfig} */
+/*** @type {import('next').NextConfig} */
+const path = require('path');
 const nextConfig = {
-  async headers() {
-    return [
-      {
-        source: '/api/(.*)',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'no-store',
-          },
-        ],
-      },
-    ];
-  },
+  reactStrictMode: true,
+  swcMinify: true,
 };
 
 module.exports = nextConfig;

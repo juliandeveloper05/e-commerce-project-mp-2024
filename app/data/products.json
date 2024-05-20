@@ -1,0 +1,56 @@
+[
+  {
+    "_id": "640a8d9f9c9c7d6b8c4d6b1a",
+    "name": "Pantufla Bob Esponja",
+    "price": 7900,
+    "imageSrc": "/productCard/pantufla3.jpg"
+  },
+  {
+    "_id": "640a8d9f9c9c7d6b8c4d6b1b",
+    "name": "Pantufla Kitty",
+    "price": 7900,
+    "imageSrc": "/productCard/pantufla1.jpg"
+  },
+  {
+    "_id": "640a8d9f9c9c7d6b8c4d6b1c",
+    "name": "Pantufla Rolling Stone",
+    "price": 7900,
+    "imageSrc": "/productCard/pantufla2.jpg"
+  },
+  {
+    "_id": "640a8d9f9c9c7d6b8c4d6b1d",
+    "name": "Pantufla Rose Cat",
+    "price": 7900,
+    "imageSrc": "/productCard/pantufla4.jpg"
+  },
+  {
+    "_id": "640a8d9f9c9c7d6b8c4d6b1e",
+    "name": "Pantufla Lilo",
+    "price": 7900,
+    "imageSrc": "/productCard/pantufla5.jpg"
+  },
+  {
+    "_id": "640a8d9f9c9c7d6b8c4d6b1f",
+    "name": "Pantufla Ojo Turco",
+    "price": 7900,
+    "imageSrc": "/productCard/pantufla6.jpg"
+  },
+  {
+    "_id": "640a8d9f9c9c7d6b8c4d6b20",
+    "name": "Pantufla Pantera Rosa",
+    "price": 7900,
+    "imageSrc": "/productCard/pantufla7.jpg"
+  },
+  {
+    "_id": "640a8d9f9c9c7d6b8c4d6b21",
+    "name": "Pantufla Harry Potter",
+    "price": 7900,
+    "imageSrc": "/productCard/pantufla8.jpg"
+  },
+  {
+    "_id": "640a8d9f9c9c7d6b8c4d6b22",
+    "name": "Pantufla Hombre Araña",
+    "price": 7900,
+    "imageSrc": "/productCard/pantufla9.jpg"
+  }
+]

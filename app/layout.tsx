@@ -5,6 +5,9 @@ import Top from './components/top/top';
 import { Poppins, Roboto } from 'next/font/google';
 import { Metadata } from 'next';
 import ProductCard from './components/productCard/ProductCard';
+import db from '../utils/db';
+import Product from './model/Product';
+import Link from 'next/link';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -26,77 +29,85 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <html lang="en" className={`${poppins.variable} ${roboto.variable}`}>
-      <body>
-        <section>
-          <Top />
-          <Navbar />
-          {/*Hero Page*/}
-          <main>{children}</main>
-          <div>
-            {/*Productos*/}
-            <div className="mb-5 text-center text-[28px] font-semibold leading-tight  md:mt-16  md:text-[34px]">
-              Productos Destacados
-            </div>
-            <div className=" -my-1 mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 md:my-2 lg:grid-cols-3">
-              <div id="primer-producto">
-                <ProductCard
-                  imageSrc="/productCard/pantufla3.jpg"
-                  name="Pantufla Bob Esponja"
-                  price={7900}
-                />
+  try {
+    await db.connectDb();
+    const products = await Product.find({});
+    await db.disconnectDb();
+
+    return (
+      <html lang="en" className={`${poppins.variable} ${roboto.variable}`}>
+        <body>
+          <section>
+            <Top />
+            <Navbar />
+            {/*Hero Page*/}
+            <main>{children}</main>
+            <div>
+              {/*Productos*/}
+              <div className="mb-5 text-center text-[28px] font-semibold leading-tight  md:mt-16  md:text-[34px]">
+                Productos Destacados
               </div>
-              <ProductCard
-                imageSrc="/productCard/pantufla1.jpg"
-                name="Pantufla Kitty"
-                price={7900}
-              />
-              <ProductCard
-                imageSrc="/productCard/pantufla2.jpg"
-                name="Pantufla Rolling Stone"
-                price={7900}
-              />
-              <ProductCard
-                imageSrc="/productCard/pantufla4.jpg"
-                name="Pantufla Rose Cat"
-                price={7900}
-              />
-              <ProductCard
-                imageSrc="/productCard/pantufla5.jpg"
-                name="Pantufla Lilo"
-                price={7900}
-              />
-              <ProductCard
-                imageSrc="/productCard/pantufla6.jpg"
-                name="Pantufla Ojo Turco"
-                price={7900}
-              />
-              <ProductCard
-                imageSrc="/productCard/pantufla7.jpg"
-                name="Pantufla Pantera Rosa"
-                price={7900}
-              />
-              <ProductCard
-                imageSrc="/productCard/pantufla8.jpg"
-                name="Pantufla Harry Potter"
-                price={7900}
-              />
-              <ProductCard
-                imageSrc="/productCard/pantufla9.jpg"
-                name="Pantufla Hombre Araña"
-                price={7900}
-              />
+              <div className=" -my-1 mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 md:my-2 lg:grid-cols-3">
+                {products.map((product) => {
+                  // Verificar si product._id existe y no es null
+                  if (product._id) {
+                    return (
+                      <Link
+                        key={product._id.toString()}
+                        href={`/productos/${product._id}`}
+                      >
+                        <ProductCard
+                          id={product._id}
+                          imageSrc={product.imageSrc}
+                          name={product.name}
+                          price={product.price}
+                        />
+                      </Link>
+                    );
+                  } else {
+                    // Manejar el caso donde product._id sea null o undefined
+                    return (
+                      <div key={product.name}>
+                        <p>Error: ID de producto no válido</p>
+                      </div>
+                    );
+                  }
+                })}
+              </div>
             </div>
-          </div>
-        </section>
-        <Footer />
-      </body>
-    </html>
-  );
+          </section>
+          <Footer />
+        </body>
+      </html>
+    );
+  } catch (err) {
+    console.error('Error al obtener los productos:', err);
+    return (
+      <html lang="en" className={`${poppins.variable} ${roboto.variable}`}>
+        <body>
+          <section>
+            <Top />
+            <Navbar />
+            {/*Hero Page*/}
+            <main>{children}</main>
+            <div>
+              {/*Productos*/}
+              <div className="mb-5 text-center text-[28px] font-semibold leading-tight  md:mt-16  md:text-[34px]">
+                Productos Destacados
+              </div>
+              <div className=" -my-1 mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 md:my-2 lg:grid-cols-3">
+                <p>Error al cargar los productos</p>
+              </div>
+            </div>
+          </section>
+          <Footer />
+        </body>
+      </html>
+    );
+  }
 }

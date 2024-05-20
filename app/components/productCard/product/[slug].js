@@ -1,5 +1,5 @@
 import styles from './product.modules.scss';
-import db from '../';
+import db from '../../../../utils/db';
 import Product from '../';
 
 export default function product() {
@@ -11,7 +11,7 @@ export async function getServerSideProps(context) {
   const slug = query.slug;
   const style = query.style;
   const size = query.size || 0;
-  db.connectDb();
+  connectDb();
   //------------
   let product = await Product.findOne({ slug }).lean();
   let subProduct = product.subProducts[style];
@@ -22,7 +22,7 @@ export async function getServerSideProps(context) {
     .sort((a, b) => {
       return a - b;
     });
-
+  console.log(subProduct);
   letnewProduct = {
     ...product,
     images: subProduct.images,
@@ -39,7 +39,7 @@ export async function getServerSideProps(context) {
   };
   //------------
   console.log('new product', newProduct);
-  db.disconnectDb();
+  disconnectDb();
 
   return { props: {} };
 }

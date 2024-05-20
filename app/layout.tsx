@@ -5,7 +5,7 @@ import Top from './components/top/top';
 import { Poppins, Roboto } from 'next/font/google';
 import { Metadata } from 'next';
 import ProductCard from './components/productCard/ProductCard';
-import db from '../utils/db';
+import db from './utils/db';
 import Product from './model/Product';
 import Link from 'next/link';
 
@@ -61,7 +61,6 @@ export default async function RootLayout({
               </div>
               <div className=" -my-1 mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 md:my-2 lg:grid-cols-3">
                 {products.map((product: Product) => {
-                  // Verificar si product._id existe y no es null
                   if (product._id) {
                     return (
                       <Link
@@ -77,7 +76,6 @@ export default async function RootLayout({
                       </Link>
                     );
                   } else {
-                    // Manejar el caso donde product._id sea null o undefined
                     return (
                       <div key={product.name}>
                         <p>Error: ID de producto no válido</p>

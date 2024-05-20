@@ -1,5 +1,5 @@
 import styles from './product.modules.scss';
-import db from '../../../../utils/db';
+
 import Product from '../';
 
 export default function product() {

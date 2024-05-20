@@ -29,6 +29,13 @@ export const metadata: Metadata = {
   },
 };
 
+interface Product {
+  _id: string;
+  name: string;
+  price: number;
+  imageSrc: string;
+}
+
 export default async function RootLayout({
   children,
 }: {
@@ -36,7 +43,7 @@ export default async function RootLayout({
 }) {
   try {
     await db.connectDb();
-    const products = await Product.find({});
+    const products: Product[] = await Product.find({});
     await db.disconnectDb();
 
     return (
@@ -53,12 +60,12 @@ export default async function RootLayout({
                 Productos Destacados
               </div>
               <div className=" -my-1 mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 md:my-2 lg:grid-cols-3">
-                {products.map((product) => {
+                {products.map((product: Product) => {
                   // Verificar si product._id existe y no es null
                   if (product._id) {
                     return (
                       <Link
-                        key={product._id.toString()}
+                        key={product._id}
                         href={`/productos/${product._id}`}
                       >
                         <ProductCard

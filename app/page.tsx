@@ -1,15 +1,14 @@
 import React from 'react';
 import Image from 'next/image';
-import Right from '@/app/ui/Right';
 import FancyButton from './ui/Fancy-Button';
 import Link from 'next/link';
 
 export default function Page() {
   return (
-    <main className="hero grid grid-cols-1 items-center gap-8  p-14 md:grid-cols-2">
+    <main className="hero grid grid-cols-1 items-center gap-8 p-14 md:grid-cols-2">
       {/*TEXTO*/}
 
-      <div className="py-8">
+      <div className="pl-12">
         <h1 className="leading-noose my-5 text-4xl font-semibold">
           Abraza la calidez, escapa del frío con{' '}
           <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent ">
@@ -31,13 +30,13 @@ export default function Page() {
 
       {/*IMAGEN*/}
 
-      <div className="h-45 relative mx-auto md:h-[400px] md:w-[400px]">
+      <div className="h-45 relative flex w-100 justify-center">
         <Image
           src="/logo3.jpg"
           alt="pantuflas"
           objectFit="contain"
-          width={480}
-          height={720}
+          width={420}
+          height={420}
           className="cover"
         />
       </div>

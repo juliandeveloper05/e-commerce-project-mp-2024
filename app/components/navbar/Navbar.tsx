@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Navbar.module.css';
-import ShoppingCart from '../navbar/shopping-cart/ShoppingCart';
+import ShoppingCart from './shopping-cart/ShoppingCart';
 import HamburgerIcon from './Hamburguer-Menu/HamburguerIcon';
 import { Poppins } from 'next/font/google';
 

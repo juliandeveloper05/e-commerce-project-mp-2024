@@ -33,6 +33,7 @@ interface Product {
   _id: string;
   name: string;
   price: number;
+  slug: string;
   imageSrc: string;
 }
 
@@ -60,20 +61,17 @@ export default async function RootLayout({
                 Productos Destacados
               </div>
               <div className=" -my-1 mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 md:my-2 lg:grid-cols-3">
-                {products.map((product: Product) => {
+                {products.map((product: Product, index) => {
                   if (product._id) {
                     return (
-                      <Link
+                      <ProductCard
                         key={product._id}
-                        href={`/productos/${product._id}`}
-                      >
-                        <ProductCard
-                          id={product._id}
-                          imageSrc={product.imageSrc}
-                          name={product.name}
-                          price={product.price}
-                        />
-                      </Link>
+                        id={`product-${index}`}
+                        imageSrc={product.imageSrc}
+                        name={product.name}
+                        price={product.price}
+                        slug={product.slug}
+                      />
                     );
                   } else {
                     return (

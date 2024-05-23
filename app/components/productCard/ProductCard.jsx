@@ -2,10 +2,10 @@ import Link from 'next/link';
 import React from 'react';
 import Image from 'next/image';
 
-const ProductCard = ({ id, imageSrc, name, price }) => {
+const ProductCard = ({ id, imageSrc, name, price, slug }) => {
   return (
     <>
-      <Link href={`/producto/${id}`} className="block">
+      <Link href={`/producto/${slug}`} className="block">
         <div className="transform cursor-pointer overflow-hidden rounded-lg bg-white shadow-md duration-200 hover:scale-105">
           <Image
             className="h-21 w-full object-cover"

@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+
 dotenv.config();
 
 const connection = {};
@@ -28,19 +29,21 @@ export async function connectDb() {
     'Trying to connect to MongoDB with URL:',
     process.env.MONGODB_URL,
   );
-  const db = await mongoose.connect(process.env.MONGODB_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+
+  const db = await mongoose.connect(process.env.MONGODB_URL);
+
   console.log('New connection to the database');
   connection.isConnected = db.connections[0].readyState;
 }
 
 export async function disconnectDb() {
   if (connection.isConnected) {
-    await mongoose.disconnect();
-    connection.isConnected = false;
-    console.log('Disconnected from the database');
+    if (process.env.NODE_ENV === 'production') {
+      await mongoose.disconnect();
+      connection.isConnected = false;
+    } else {
+      console.log('Not disconnecting from the database');
+    }
   }
 }
 

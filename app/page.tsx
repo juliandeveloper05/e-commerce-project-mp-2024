@@ -24,13 +24,13 @@ export default function Page() {
         {/*BOTONES*/}
 
         <div className="flex justify-center md:block">
-          <FancyButton text="Última Colección" icon={undefined} />
+          <FancyButton text="Descargue el Catalago" icon={undefined} />
         </div>
       </div>
 
       {/*IMAGEN*/}
 
-      <div className="h-45 relative flex w-100 justify-center">
+      <div className="h-45 w-100 relative flex justify-center">
         <Image
           src="/logo3.jpg"
           alt="pantuflas"

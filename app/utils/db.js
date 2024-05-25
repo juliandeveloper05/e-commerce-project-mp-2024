@@ -14,7 +14,7 @@ export async function connectDb() {
   if (mongoose.connections.length > 0) {
     connection.isConnected = mongoose.connections[0].readyState;
     if (connection.isConnected === 1) {
-      console.log('Use previous connection to the database');
+      console.log('Using previous connection to the database');
       return;
     }
     await mongoose.disconnect();
@@ -30,10 +30,17 @@ export async function connectDb() {
     process.env.MONGODB_URL,
   );
 
-  const db = await mongoose.connect(process.env.MONGODB_URL);
-
-  console.log('New connection to the database');
-  connection.isConnected = db.connections[0].readyState;
+  try {
+    const db = await mongoose.connect(process.env.MONGODB_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('New connection to the database');
+    connection.isConnected = db.connections[0].readyState;
+  } catch (error) {
+    console.error('Error connecting to the database', error);
+    throw new Error('Error connecting to the database');
+  }
 }
 
 export async function disconnectDb() {

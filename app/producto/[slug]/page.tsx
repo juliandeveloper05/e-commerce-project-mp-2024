@@ -15,14 +15,23 @@ export const metadata: Metadata = {
   title: 'Producto',
 };
 
-type Props = {
+interface ProductProps {
+  _id: string;
+  name: string;
+  slug: string;
+  price: number;
+  imageSrc: string;
+  description?: string;
+}
+
+interface PageProps {
   params: {
     slug: string;
   };
-};
+}
 
-export default async function Page({ params }: Props) {
-  let product = null;
+export default async function Page({ params }: PageProps) {
+  let product: ProductProps | null = null;
 
   try {
     await connectDb();
@@ -54,7 +63,9 @@ export default async function Page({ params }: Props) {
           {/* DESCRIPCION */}
           <h1 className="mb-4 text-3xl font-bold">{product.name}</h1>
           <p className="mb-4 text-2xl font-semibold">${product.price}</p>
-          <p className="mb-8 text-gray-700">Product Description</p>
+          <p className="mb-8 text-gray-700">
+            {product.description || 'Sin descripción'}
+          </p>
           <div className="mb-8 flex items-center">
             <div className="mr-4 flex items-center">
               {/* BOTONES */}

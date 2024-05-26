@@ -1,7 +1,0 @@
-{
-  "build": {
-    "env": {
-      "MONGODB_URL": "mongodb+srv://juliansotodev:axTsbl6d2Nc1eqWM@cluster0.zftd2du.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-    }
-  }
-}

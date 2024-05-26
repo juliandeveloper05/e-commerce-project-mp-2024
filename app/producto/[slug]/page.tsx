@@ -49,13 +49,13 @@ export default async function Page({ params }: PageProps) {
   return (
     <div className="mx-auto max-w-7xl py-12">
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-        <div>
+        <div className="mb-8 md:mb-0 md:mr-8">
           {/* IMAGEN */}
           <Image
             src={product.imageSrc}
             alt={product.name}
-            width={500}
-            height={500}
+            width={400}
+            height={400}
             className="w-full rounded-lg"
           />
         </div>

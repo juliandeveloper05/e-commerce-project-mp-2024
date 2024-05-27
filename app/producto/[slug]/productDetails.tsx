@@ -60,24 +60,29 @@ const ProductDetails = ({ slug }: ProductDetailsProps) => {
             {product.description || 'Sin descripción'}
           </p>
           <div className="mb-8 flex items-center">
-            <div className="mr-4 flex items-center">
-              {/* BOTONES */}
-              <button className="rounded-l bg-gray-200 px-4 py-3">-</button>
-              <span className="bg-gray-200 px-4 py-3">5</span>
-              <button className="rounded-r bg-gray-200 px-4 py-3">+</button>
+            {/* BOTONES */}
+
+            <div className="mr-4 flex items-center rounded border ">
+              <button className="border-grey-500 rounded-l  border-black bg-gray-200 px-4 py-3">
+                -
+              </button>
+              <span className="white white border-white px-4 py-3">5</span>
+              <button className="white border-grey-500 rounded-r border-l bg-gray-200 px-4 py-3">
+                +
+              </button>
             </div>
             <button className="flex items-center rounded-md bg-purple-600 px-6 py-3 font-semibold text-white">
-              <FaCartPlus className="mr-2" size={20} /> ADD TO CART
+              <FaCartPlus className="mr-2" size={20} /> Agregar al Carrito
             </button>
           </div>
           {/* REDES SOCIALES */}
           <div className="flex items-center border-t border-gray-300 pt-4">
-            <p className="mr-4 text-gray-700">Share:</p>
-            <div className="flex">
-              <FaFacebookF className="mr-2 text-blue-600" size={16} />
-              <FaTwitter className="mr-2 text-blue-400" size={16} />
-              <FaInstagram className="mr-2 text-pink-500" size={16} />
-              <FaLinkedinIn className="mr-2 text-blue-700" size={16} />
+            <p className="mr-4 text-gray-700">Compartir:</p>
+            <div className="flex space-x-5">
+              <FaFacebookF className="text-blue-600" size={16} />
+              <FaTwitter className="text-blue-400" size={16} />
+              <FaInstagram className="text-pink-500" size={16} />
+              <FaLinkedinIn className="text-blue-700" size={16} />
               <FaPinterest className="text-red-600" size={16} />
             </div>
           </div>

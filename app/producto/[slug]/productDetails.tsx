@@ -7,8 +7,12 @@ import {
   FaPinterest,
   FaCartPlus,
 } from 'react-icons/fa';
-import Image from 'next/image';
 import useSWR from 'swr';
+import ProductDetailsCarousel from './ProductDetailsCarousel';
+import rosecat1 from '../../../public/productCard/rosecat/rosecat1.jpg';
+import rosecat2 from '../../../public/productCard/rosecat/rosecat2.jpg';
+import rosecat3 from '../../../public/productCard/rosecat/rosecat3.jpg';
+import Share from './Share/Share';
 
 interface ProductProps {
   _id: string;
@@ -16,6 +20,7 @@ interface ProductProps {
   slug: string;
   price: number;
   imageSrc: string;
+  imageSwiper: string[];
   description?: string;
 }
 
@@ -42,18 +47,12 @@ const ProductDetails = ({ slug }: ProductDetailsProps) => {
   return (
     <div className="mx-auto max-w-7xl py-12">
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-        <div className="mb-8 md:mb-0 md:mr-8">
-          {/* IMAGEN */}
-          <Image
-            src={product.imageSrc}
-            alt={product.name}
-            width={400}
-            height={400}
-            className="w-full rounded-lg"
-          />
-        </div>
+        <ProductDetailsCarousel
+          mainImage={product.imageSrc}
+          images={[rosecat1.src, rosecat2.src, rosecat3.src]}
+        />
         <div>
-          {/* DESCRIPCION */}
+          {/* DESCRIPCIÓN */}
           <h1 className="mb-4 text-3xl font-bold">{product.name}</h1>
           <p className="mb-4 text-2xl font-semibold">${product.price}</p>
           <p className="mb-8 text-gray-700">
@@ -61,12 +60,11 @@ const ProductDetails = ({ slug }: ProductDetailsProps) => {
           </p>
           <div className="mb-8 flex items-center">
             {/* BOTONES */}
-
-            <div className="mr-4 flex items-center rounded border ">
-              <button className="border-grey-500 rounded-l  border-black bg-gray-200 px-4 py-3">
+            <div className="mr-4 flex items-center rounded border">
+              <button className="border-grey-500 rounded-l border-black bg-gray-200 px-4 py-3">
                 -
               </button>
-              <span className="white white border-white px-4 py-3">5</span>
+              <span className="white border-white px-4 py-3">5</span>
               <button className="white border-grey-500 rounded-r border-l bg-gray-200 px-4 py-3">
                 +
               </button>
@@ -77,13 +75,8 @@ const ProductDetails = ({ slug }: ProductDetailsProps) => {
           </div>
           {/* REDES SOCIALES */}
           <div className="flex items-center border-t border-gray-300 pt-4">
-            <p className="mr-4 text-gray-700">Compartir:</p>
             <div className="flex space-x-5">
-              <FaFacebookF className="text-blue-600" size={16} />
-              <FaTwitter className="text-blue-400" size={16} />
-              <FaInstagram className="text-pink-500" size={16} />
-              <FaLinkedinIn className="text-blue-700" size={16} />
-              <FaPinterest className="text-red-600" size={16} />
+              <Share />
             </div>
           </div>
         </div>

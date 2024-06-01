@@ -6,11 +6,15 @@ import rosecat1 from '../../../public/productCard/rosecat/rosecat1.jpg';
 import rosecat2 from '../../../public/productCard/rosecat/rosecat2.jpg';
 import rosecat3 from '../../../public/productCard/rosecat/rosecat3.jpg';
 import Share from './Share/Share';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import styles from './productdetailsstyles/productDetails.modules.scss';
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
 const ProductDetails = ({ slug }) => {
   const { data: product, error } = useSWR(`/api/products/${slug}`, fetcher);
+  const router = useRouter();
 
   if (error) {
     return <div>Error al cargar el producto</div>;
@@ -34,7 +38,29 @@ const ProductDetails = ({ slug }) => {
             {product.description || 'Sin descripción'}
           </p>
           <div className="mb-8 flex items-center">
-            <div></div>
+            <div className={styles.infos__shipping}>
+              <h4>Select a size: </h4>
+              <div className={styles.infos__sizes_wrap}>
+                {product.sizes.map((size, i) => (
+                  <Link
+                    key={i}
+                    href={`/product/${product.slug}?style=${
+                      router?.query?.style ? router.query.style : ''
+                    }&size=${i}`}
+                  >
+                    <div
+                      className={`${styles.infos__sizes_size} ${
+                        i == (router?.query?.size ? router.query.size : '') &&
+                        styles.active_size
+                      }`}
+                      onClick={() => setSize(size.size)}
+                    >
+                      {size.size}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
             <div className="mr-4 flex items-center rounded border">
               <button className="border-grey-500 rounded-l border-black bg-gray-200 px-4 py-3">
                 -

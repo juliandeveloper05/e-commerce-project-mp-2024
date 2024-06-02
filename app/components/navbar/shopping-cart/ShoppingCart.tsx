@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './ShoppingCart.module.css';
+import { CiShoppingCart } from 'react-icons/ci';
 
 interface ShoppingCartProps {
   className?: string;
@@ -12,8 +13,20 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({
 }) => {
   return showOnDesktop ? (
     <div className={`${styles.cartContainer} ${className}`}>
-      <span className={styles.cartIcon}>🛒</span>
-      <span className={styles.cartCount}>0</span>
+      <span className={`${styles.cartIcon} text-3xl`}>
+        <CiShoppingCart />
+      </span>
+      <span
+        className={`${styles.cartCount} 
+      absolute
+      right-[-10px]
+      top-[-10px]
+      justify-center
+      rounded-full
+      `}
+      >
+        0
+      </span>
     </div>
   ) : null;
 };

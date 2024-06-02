@@ -5,16 +5,16 @@
 
 .cartIcon {
   font-size: 1.5rem;
-  color: #fff;
+  color: black;
 }
 
 .cartCount {
   position: absolute;
-  top: -0.5rem;
+  top: -0.7rem;
   right: -0.5rem;
   background-color: red;
   color: #fff;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   padding: 0.2rem 0.5rem;
-  border-radius: 50%;
+  border-radius: 100%;
 }

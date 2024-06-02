@@ -1,17 +1,49 @@
 import './ui/global.css';
-import { montserrat } from './ui/fonts';
+import Footer from './components/footer/Footer';
 import Navbar from './components/navbar/Navbar';
+import Top from './components/top/top';
+import { Poppins, Roboto } from 'next/font/google';
+import { Metadata } from 'next';
+import ProductsSection from './components/productCard/ProductSection/ProductsSection';
 
-export default function RootLayout({
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-poppins',
+});
+
+const roboto = Roboto({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  variable: '--font-roboto',
+});
+
+export const metadata: Metadata = {
+  title: 'Maria Pancha | E-Commerce',
+  description: 'Ecommerce app',
+  icons: {
+    icon: '/maria-pancha-logo.jpg',
+  },
+};
+
+export default async function RootLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: { slug: string };
 }) {
   return (
-    <html lang="en">
-      <body className={`${montserrat.className} antialiased`}>
-        <Navbar />
-        {children}
+    <html lang="en" className={`${poppins.variable} ${roboto.variable}`}>
+      <body>
+        <section>
+          <Top />
+          <Navbar />
+          <main>{children}</main>
+          <ProductsSection />
+        </section>
+        {params.slug}
+        <Footer />
       </body>
     </html>
   );

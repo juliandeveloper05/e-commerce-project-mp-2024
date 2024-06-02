@@ -1,6 +1,8 @@
-import { Montserrat } from 'next/font/google';
+import { Belgrano } from 'next/font/google';
 
-export const montserrat = Montserrat({
+const lusitana = Belgrano({
   subsets: ['latin'],
-  weight: ['400', '700'],
+  weight: ['400', '400'],
 });
+
+export { lusitana };

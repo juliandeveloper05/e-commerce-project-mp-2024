@@ -1,4 +1,3 @@
-// page.tsx
 import type { Metadata } from 'next';
 import ProductDetails from './productDetails';
 

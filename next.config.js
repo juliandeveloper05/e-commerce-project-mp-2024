@@ -1,8 +1,4 @@
-/*** @type {import('next').NextConfig} */
-const path = require('path');
-const nextConfig = {
-  reactStrictMode: true,
-  swcMinify: true,
-};
+/** @type {import('next').NextConfig} */
+const nextConfig = {};
 
 module.exports = nextConfig;

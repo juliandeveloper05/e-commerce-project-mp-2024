@@ -18,7 +18,7 @@ export default async function ProductsSection() {
 
     return (
       <div>
-        <div className="mb-5 text-center text-[28px] font-semibold leading-tight  md:mt-16  md:text-[34px]">
+        <div className="  my-8  mb-5 text-center text-[28px] font-semibold leading-tight  md:mt-16  md:text-[34px]">
           Todos los Productos
         </div>
         <div className="-my-1 mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 md:my-2 lg:grid-cols-3">

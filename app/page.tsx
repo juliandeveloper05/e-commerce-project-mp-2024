@@ -5,11 +5,11 @@ import Link from 'next/link';
 
 export default function Page() {
   return (
-    <main className="hero grid grid-cols-1 items-center gap-8 p-14 md:grid-cols-2">
+    <main className="hero flex flex-col items-center justify-center p-4 md:flex-row md:p-14">
       {/*TEXTO*/}
 
-      <div className="pl-12">
-        <h1 className="leading-noose my-5 text-4xl font-semibold">
+      <div className="md:w-1/2 md:pr-8">
+        <h1 className="leading-noose my-5 text-3xl font-semibold md:text-4xl">
           Abraza la calidez, escapa del frío con{' '}
           <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent ">
             MP PANTUFLONES
@@ -23,14 +23,14 @@ export default function Page() {
 
         {/*BOTONES*/}
 
-        <div className="flex justify-center md:block">
+        <div className="flex justify-center md:justify-start">
           <FancyButton text="Descargue el Catalago" icon={undefined} />
         </div>
       </div>
 
       {/*IMAGEN*/}
 
-      <div className="h-45 w-100 relative flex justify-center">
+      <div className="mt-8 flex justify-center md:mt-0 md:w-1/2">
         <Image
           src="/logo3.jpg"
           alt="pantuflas"

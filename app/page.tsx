@@ -1,17 +1,15 @@
 import React from 'react';
 import Image from 'next/image';
 import FancyButton from './ui/Fancy-Button';
-import Link from 'next/link';
 
 export default function Page() {
   return (
     <main className="hero flex flex-col items-center justify-center p-4 md:flex-row md:p-14">
       {/*TEXTO*/}
-
       <div className="md:w-1/2 md:pr-8">
         <h1 className="leading-noose my-5 text-3xl font-semibold md:text-4xl">
           Abraza la calidez, escapa del frío con{' '}
-          <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent ">
+          <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             MP PANTUFLONES
           </span>
         </h1>
@@ -22,23 +20,25 @@ export default function Page() {
         </p>
 
         {/*BOTONES*/}
-
-        <div className="flex justify-center md:justify-start">
+        <div className="flex hidden justify-center md:block md:justify-start">
           <FancyButton text="Descargue el Catalago" icon={undefined} />
         </div>
       </div>
 
       {/*IMAGEN*/}
-
-      <div className="mt-8 flex justify-center md:mt-0 md:w-1/2">
+      <div className="flex flex-col justify-center md:mt-0 md:w-1/2 md:flex-row">
         <Image
           src="/logo3.jpg"
           alt="pantuflas"
           objectFit="contain"
           width={420}
           height={420}
-          className="cover"
+          className="cover mb-8 md:mb-0"
         />
+        {/* Botón para dispositivos móviles */}
+        <div className="flex justify-center md:hidden">
+          <FancyButton text="Descargue el Catalago" icon={undefined} />
+        </div>
       </div>
     </main>
   );

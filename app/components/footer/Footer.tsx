@@ -3,12 +3,12 @@ import Container from '@/app/ui/Container';
 import FooterList from './FooterList';
 import Link from 'next/link';
 import { MdFacebook } from 'react-icons/md';
-import { FaInstagram } from 'react-icons/fa';
+import { FaInstagram, FaWhatsapp } from 'react-icons/fa'; // Importa el icono de WhatsApp
 import Payment from './Payment';
 
 const Footer = () => {
   return (
-    <footer className=" mt-2 bg-slate-700 text-sm text-slate-200">
+    <footer className="mt-2 bg-slate-700 text-sm text-slate-200">
       <Container>
         <div className="flex flex-col justify-between pb-8 pt-16 md:flex-row">
           <FooterList>
@@ -17,7 +17,7 @@ const Footer = () => {
               <a className="hover:text-[#ff02ab]">Perfil de MP</a>
             </Link>
             <Link href="/#primer-producto" legacyBehavior>
-              <a className="hover:text-[#ff02ab] ">Todos los Productos</a>
+              <a className="hover:text-[#ff02ab]">Todos los Productos</a>
             </Link>
             <Link href="/about" legacyBehavior>
               <a className="hover:text-[#ff02ab]">Sobre MP</a>
@@ -28,8 +28,11 @@ const Footer = () => {
           </FooterList>
           <FooterList>
             <h3 className="mb-2 text-base font-bold">Servicio al Cliente</h3>
-            <Link href="/" legacyBehavior>
-              <a className="hover:text-[#ff02ab]">Contactanos</a>
+
+            <Link href="https://wa.me/5491126625292" legacyBehavior>
+              <a className="flex items-center hover:text-[#ff02ab]">
+                Contactanos
+              </a>
             </Link>
             <Link href="/" legacyBehavior>
               <a className="hover:text-[#ff02ab]">Politica de Envios</a>

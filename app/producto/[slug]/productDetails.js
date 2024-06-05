@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ClipLoader } from 'react-spinners';
 import { BsHeart } from 'react-icons/bs';
-import styles from './detail.modules.scss';
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -21,10 +20,15 @@ const ProductDetails = ({ slug }) => {
   return (
     <div className="flex min-h-screen items-center justify-center">
       {!product ? (
-        <ClipLoader color="#9333ea" size={80} />
+        <div className="flex flex-col items-center justify-center">
+          <ClipLoader color="#9333ea" size={80} />
+          <p className="mt-4 text-lg font-medium text-gray-600">
+            Cargando producto...
+          </p>
+        </div>
       ) : (
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:items-center ">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:items-center">
             <div className="h-auto w-full">
               <img
                 src={product.imageSrc}
@@ -66,7 +70,7 @@ const ProductDetails = ({ slug }) => {
                   ))}
                 </div>
               </div>
-              <div className=" -mr-0 mb-4 flex w-full items-center justify-center rounded md:mb-12 ">
+              <div className="mb-4 flex w-full items-center justify-center rounded md:mb-12">
                 <button className="border-grey-500 rounded-l border-black bg-gray-200 px-4 py-4 hover:bg-gray-300 hover:text-black">
                   -
                 </button>

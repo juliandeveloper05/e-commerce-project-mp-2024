@@ -3,7 +3,7 @@ import Container from '@/app/ui/Container';
 import FooterList from './FooterList';
 import Link from 'next/link';
 import { MdFacebook } from 'react-icons/md';
-import { FaInstagram, FaWhatsapp } from 'react-icons/fa'; // Importa el icono de WhatsApp
+import { FaInstagram } from 'react-icons/fa';
 import Payment from './Payment';
 
 const Footer = () => {
@@ -33,7 +33,7 @@ const Footer = () => {
               legacyBehavior
             >
               <a className="flex items-center hover:text-[#ff02ab]">
-                <FaWhatsapp className="mr-2" /> Contactanos
+                Contactanos
               </a>
             </Link>
             <Link href="/" legacyBehavior>

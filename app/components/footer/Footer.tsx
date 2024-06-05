@@ -28,10 +28,12 @@ const Footer = () => {
           </FooterList>
           <FooterList>
             <h3 className="mb-2 text-base font-bold">Servicio al Cliente</h3>
-
-            <Link href="https://wa.me/5491126625292" legacyBehavior>
+            <Link
+              href="https://wa.me/5491126625292?text=Hola%20Maria%20Pancha%20Pantuflones%2C%20me%20gustar%C3%ADa%20obtener%20m%C3%A1s%20informaci%C3%B3n%20sobre%20sus%20productos."
+              legacyBehavior
+            >
               <a className="flex items-center hover:text-[#ff02ab]">
-                Contactanos
+                <FaWhatsapp className="mr-2" /> Contactanos
               </a>
             </Link>
             <Link href="/" legacyBehavior>

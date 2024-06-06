@@ -58,8 +58,7 @@ const ProductDetailsCarousel = ({ mainImage, images }) => {
         infiniteLoop={true}
         showIndicators={false}
         showStatus={false}
-        showThumbs={true}
-        thumbWidth={60}
+        showThumbs={false}
         swipeable={false}
         autoPlay={false}
         renderArrowPrev={renderCustomArrowPrev}

@@ -1,16 +1,24 @@
 import type { Metadata } from 'next';
 import ProductDetails from './productDetails';
+import ProductsSection from '@/app/components/productCard/ProductSection/ProductsSection';
 
 export const metadata: Metadata = {
   title: 'Producto',
 };
 
-interface PageProps {
+interface ProductDetailsPageProps {
   params: {
     slug: string;
   };
 }
 
-export default async function Page({ params }: PageProps) {
-  return <ProductDetails slug={params.slug} />;
+export default async function ProductDetailsPage({
+  params,
+}: ProductDetailsPageProps) {
+  return (
+    <>
+      <ProductDetails slug={params.slug} />
+      <ProductsSection />
+    </>
+  );
 }

@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation';
 import { ClipLoader } from 'react-spinners';
 import { BsHeart } from 'react-icons/bs';
 
+import ProductDetailsCarousel from './components/ProductDetailsCarousel';
+
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
 const ProductDetails = ({ slug }) => {
@@ -29,11 +31,15 @@ const ProductDetails = ({ slug }) => {
       ) : (
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:items-center">
-            <div className="h-auto w-full">
-              <img
+            <div className="h-full w-full">
+              {/* <img
                 src={product.imageSrc}
                 alt={product.name}
                 className="h-auto w-full rounded object-cover"
+              /> */}
+              <ProductDetailsCarousel
+                mainImage={product.imageSrc}
+                images={product.imageSwiper}
               />
             </div>
             <div className="flex flex-col items-center md:items-start">

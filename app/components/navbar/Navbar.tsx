@@ -113,7 +113,9 @@ const Navbar = () => {
               </li>
             </ul>
             <div>
-              <ShoppingCart />
+              <Link href="/cart">
+                <ShoppingCart showOnDesktop />
+              </Link>
             </div>
           </div>
         )}

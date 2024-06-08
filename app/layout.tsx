@@ -4,7 +4,6 @@ import Navbar from './components/navbar/Navbar';
 import Top from './components/top/top';
 import { Poppins, Roboto } from 'next/font/google';
 import { Metadata } from 'next';
-import ProductsSection from './components/productCard/ProductSection/ProductsSection';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -40,7 +39,6 @@ export default async function RootLayout({
           <Top />
           <Navbar />
           <main>{children}</main>
-          <ProductsSection />
         </section>
         {params.slug}
         <Footer />

@@ -77,7 +77,9 @@ const Navbar = () => {
         <div className="py-3"></div>
         {/* Shopping Cart on Desktop */}
         <div className="px-5">
-          <ShoppingCart showOnDesktop />
+          <Link href="/cart">
+            <ShoppingCart showOnDesktop />
+          </Link>
         </div>
       </div>
 

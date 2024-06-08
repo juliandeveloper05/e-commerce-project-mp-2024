@@ -1,7 +1,7 @@
 const CartPage = () => {
   return (
     <div>
-      <p>This is your shopping cart page.</p>
+      <p>Carrito de Compras</p>
     </div>
   );
 };

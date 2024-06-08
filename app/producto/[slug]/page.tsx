@@ -18,7 +18,6 @@ export default async function ProductDetailsPage({
   return (
     <>
       <ProductDetails slug={params.slug} />
-      <ProductsSection />
     </>
   );
 }

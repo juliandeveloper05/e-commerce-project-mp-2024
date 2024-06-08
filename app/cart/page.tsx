@@ -1,7 +1,9 @@
+import Cart from './components/CartPage';
+
 const CartPage = () => {
   return (
     <div>
-      <p>Carrito de Compras</p>
+      <Cart />
     </div>
   );
 };

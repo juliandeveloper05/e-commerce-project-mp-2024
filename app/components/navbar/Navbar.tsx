@@ -35,18 +35,16 @@ const Navbar = () => {
     >
       {/* LOGO */}
       <div className="px-5">
-        <Link href="/" legacyBehavior>
-          <Image
-            src="/maria-pancha-logo.jpg"
-            alt="Maria Pancha Logo"
-            width={90}
-            height={20}
-            className="  
+        <Image
+          src="/maria-pancha-logo.jpg"
+          alt="Maria Pancha Logo"
+          width={90}
+          height={20}
+          className="  
             h-[90px]
             w-[90px]
             "
-          />
-        </Link>
+        />
       </div>
 
       {/* DESKTOP LINKS */}

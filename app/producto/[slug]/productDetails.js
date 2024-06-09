@@ -4,10 +4,9 @@ import useSWR from 'swr';
 import Share from './Share/Share';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ClipLoader } from 'react-spinners';
 import { BsHeart } from 'react-icons/bs';
-
 import ProductDetailsCarousel from './components/ProductDetailsCarousel';
+import Loader from './components/Loader/Loader';
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -22,9 +21,11 @@ const ProductDetails = ({ slug }) => {
   return (
     <div className="flex min-h-screen items-center justify-center">
       {!product ? (
-        <div className="flex flex-col items-center justify-center">
-          <ClipLoader color="#9333ea" size={80} />
-          <p className="mt-4 text-lg font-medium text-gray-600">
+        <div className="flex flex-col items-center justify-center space-y-4">
+          <div className="mb-8 animate-spin">
+            <Loader />
+          </div>
+          <p className="animate-pulse text-2xl font-bold text-gray-600">
             Cargando producto...
           </p>
         </div>
@@ -32,11 +33,6 @@ const ProductDetails = ({ slug }) => {
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:items-center">
             <div className="h-full w-full">
-              {/* <img
-                src={product.imageSrc}
-                alt={product.name}
-                className="h-auto w-full rounded object-cover"
-              /> */}
               <ProductDetailsCarousel
                 mainImage={product.imageSrc}
                 images={product.imageSwiper}

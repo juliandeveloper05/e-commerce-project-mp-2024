@@ -18,9 +18,12 @@ const EmptyCart = () => {
             <button className="mb-4 w-full rounded bg-yellow-500 px-6 py-3 font-bold text-white hover:bg-yellow-700 sm:mb-0 sm:mr-4 sm:w-auto">
               ACCEDER A LA CUENTA
             </button>
-            <button className="w-full rounded bg-black px-6 py-3 font-bold text-white hover:bg-gray-700 sm:w-auto">
+            <Link
+              href="/"
+              className="w-full rounded bg-black px-6 py-3 font-bold text-white hover:bg-gray-700 sm:w-auto"
+            >
               VOLVER A LA TIENDA
-            </button>
+            </Link>
           </div>
         </div>
       </div>

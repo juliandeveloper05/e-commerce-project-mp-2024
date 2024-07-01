@@ -9,10 +9,6 @@ import { Button } from '../components/ui/button';
 import { Mail } from 'lucide-react';
 
 const LoginForm = () => {
-  const handleGoogleLogin = () => {
-    console.log('Inicio de sesión con Google simulado');
-  };
-
   return (
     <div className="flex min-h-[calc(75vh-30px)] items-start justify-center bg-gradient-to-br from-purple-400 via-pink-500 to-red-500 pt-16">
       <div className=" "></div>

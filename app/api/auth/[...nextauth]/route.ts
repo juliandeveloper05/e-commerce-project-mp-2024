@@ -1,4 +1,4 @@
-import NextAuth from 'next-auth/next';
+import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 
 const handler = NextAuth({
@@ -6,16 +6,24 @@ const handler = NextAuth({
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID ?? '',
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
+      authorization: {
+        url: 'https://accounts.google.com/o/oauth2/v2/auth',
+        params: {
+          scope: 'openid email profile',
+          access_type: 'offline',
+          prompt: 'consent',
+          response_type: 'code',
+        },
+      },
     }),
   ],
   callbacks: {
     async redirect({ url, baseUrl }) {
-      // Ensure we only redirect to URLs on our domain
       return url.startsWith(baseUrl) ? url : baseUrl;
     },
   },
   pages: {
-    signIn: '/login', // Specify the path to your custom login page
+    signIn: '/login', // Especifica el camino a tu página de login personalizada
   },
 });
 

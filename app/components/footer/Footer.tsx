@@ -8,7 +8,7 @@ import Payment from './Payment';
 
 const Footer = () => {
   return (
-    <footer className="mt-2 bg-slate-700 text-sm text-slate-200">
+    <footer className="mt-0 bg-slate-700 text-sm text-slate-200">
       <Container>
         <div className="flex flex-col justify-between pb-8 pt-16 md:flex-row">
           <FooterList>

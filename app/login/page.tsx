@@ -1,123 +1,44 @@
-'use client';
-
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Card,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '../components/ui/card';
-import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
-import { Label } from '../components/ui/label';
-import { Eye, EyeOff, Mail, Facebook } from 'lucide-react';
+import { Mail } from 'lucide-react';
 
 const LoginForm = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log('Login attempt', { email, password });
-  };
-
-  const handleSocialLogin = (provider: string) => {
-    console.log(`Login with ${provider}`);
+  const handleGoogleLogin = () => {
+    console.log('Inicio de sesión con Google simulado');
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-center text-2xl font-bold text-black">
-            Iniciar Sesión
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="email">Correo Electrónico</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="tu@ejemplo.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Contraseña</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="w-full pr-10"
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0 top-0 h-full"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </Button>
-              </div>
-            </div>
-            <Button
-              type="submit"
-              className="focus:shadow-outline w-full transform rounded bg-gradient-to-r from-yellow-400 via-orange-500 to-orange-600 px-4 py-2 font-bold text-black transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-105 hover:from-yellow-500 hover:via-orange-600 hover:to-orange-700 focus:outline-none"
-            >
+    <div className="flex min-h-[calc(75vh-30px)] items-start justify-center bg-gradient-to-br from-purple-400 via-pink-500 to-red-500 pt-16">
+      <div className=" "></div>
+      <div className="relative z-10 w-full max-w-md px-8 py-24 sm:px-6 lg:px-8">
+        <div className="absolute -left-10 -top-10 h-40 w-40 rounded-full bg-yellow-300 opacity-50 blur-3xl"></div>
+        <div className="absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-blue-300 opacity-50 blur-3xl"></div>
+        <Card className="overflow-hidden shadow-2xl">
+          <CardHeader className="bg-gradient-to-r from-orange-400 to-rose-400 pb-6 pt-8">
+            <CardTitle className="text-center text-2xl font-bold text-white">
               Iniciar Sesión
-            </Button>
-          </form>
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="bg-white px-2 text-gray-500">
-                  O continúa con
-                </span>
-              </div>
-            </div>
-            <div className="mt-6 grid grid-cols-2 gap-3">
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="bg-white p-6">
+            <div className="space-y-6">
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => handleSocialLogin('Gmail')}
-                className="inline-flex w-full items-center justify-center gap-2"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-gray-200 bg-white py-3 text-sm font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
               >
                 <Mail className="h-5 w-5 text-red-500" />
-                <span>Gmail</span>
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => handleSocialLogin('Facebook')}
-                className="inline-flex w-full items-center justify-center gap-2"
-              >
-                <Facebook className="h-5 w-5 text-blue-600" />
-                <span>Facebook</span>
+                <span>Iniciar sesión con Gmail</span>
               </Button>
             </div>
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-center pb-6">
-          <a href="#" className="text-sm text-blue-600 hover:underline">
-            ¿Olvidaste tu contraseña?
-          </a>
-        </CardFooter>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

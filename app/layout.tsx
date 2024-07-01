@@ -4,6 +4,7 @@ import Navbar from './components/navbar/Navbar';
 import Top from './components/top/top';
 import { Poppins, Roboto } from 'next/font/google';
 import { Metadata } from 'next';
+import Providers from './Providers';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -35,13 +36,15 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${poppins.variable} ${roboto.variable}`}>
       <body>
-        <section>
-          <Top />
-          <Navbar />
-          <main>{children}</main>
-        </section>
-        {params.slug}
-        <Footer />
+        <Providers>
+          <section>
+            <Top />
+            <Navbar />
+            <main>{children}</main>
+          </section>
+          {params.slug}
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

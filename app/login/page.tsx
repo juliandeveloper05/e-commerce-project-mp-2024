@@ -1,40 +1,59 @@
+'use client';
+
 import React from 'react';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '../components/ui/card';
+import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Mail } from 'lucide-react';
+import { signIn } from 'next-auth/react';
+import Image from 'next/image';
+import Link from 'next/link';
 
 const LoginForm = () => {
+  const handleGoogleSignIn = () => {
+    signIn('google', { callbackUrl: '/' });
+  };
+
   return (
-    <div className="flex min-h-[calc(75vh-30px)] items-start justify-center bg-gradient-to-br from-purple-400 via-pink-500 to-red-500 pt-16">
-      <div className=" "></div>
-      <div className="relative z-10 w-full max-w-md px-8 py-24 sm:px-6 lg:px-8">
-        <div className="absolute -left-10 -top-10 h-40 w-40 rounded-full bg-yellow-300 opacity-50 blur-3xl"></div>
-        <div className="absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-blue-300 opacity-50 blur-3xl"></div>
-        <Card className="overflow-hidden shadow-2xl">
-          <CardHeader className="bg-gradient-to-r from-orange-400 to-rose-400 pb-6 pt-8">
-            <CardTitle className="text-center text-2xl font-bold text-white">
-              Iniciar Sesión
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="bg-white p-6">
-            <div className="space-y-6">
-              <Button
-                type="button"
-                variant="outline"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-gray-200 bg-white py-3 text-sm font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
-              >
-                <Mail className="h-5 w-5 text-red-500" />
-                <span>Iniciar sesión con Gmail</span>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-r from-purple-500 to-pink-500 px-4 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-md overflow-hidden shadow-2xl">
+        <div className="relative h-32 bg-gradient-to-r from-purple-600 to-pink-600">
+          <div className="absolute inset-0 bg-black opacity-50"></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Image
+              src="/maria-pancha-logo.jpg"
+              alt="Maria Pancha Logo"
+              width={80}
+              height={80}
+              className="rounded-full border-4 border-white shadow-lg"
+            />
+          </div>
+        </div>
+        <CardContent className="bg-white p-8">
+          <h2 className="mb-8 text-center text-3xl font-extrabold text-gray-900">
+            Bienvenido a Maria Pancha
+          </h2>
+          <div className="space-y-6">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleGoogleSignIn}
+              className="flex w-full items-center justify-center gap-3 rounded-md border border-transparent bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:from-purple-600 hover:to-pink-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+            >
+              <Mail className="h-5 w-5" />
+              Iniciar sesión con Gmail
+            </Button>
+          </div>
+          <p className="mt-6 text-center text-sm text-gray-600">
+            Al iniciar sesión, aceptas nuestros{' '}
+            <a
+              href="http://localhost:3000/login/terms-and-conditions"
+              className="font-medium text-purple-600 hover:text-purple-500"
+            >
+              Términos y Condiciones
+            </a>
+          </p>
+        </CardContent>
+      </Card>
     </div>
   );
 };

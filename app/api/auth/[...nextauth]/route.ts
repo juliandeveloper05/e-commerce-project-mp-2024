@@ -1,61 +1,66 @@
 import NextAuth, { NextAuthOptions, Session, User } from 'next-auth';
+import { JWT } from 'next-auth/jwt';
 import GoogleProvider from 'next-auth/providers/google';
 import clientPromise from '../lib/db';
 import { Collection } from 'mongodb';
 
-// Extend the Session interface
-interface ExtendedSession extends Session {
+interface ExtendedSession extends Omit<Session, 'user'> {
   accessToken?: string;
-}
-
-interface Account {
-  providerAccountId?: string;
-  access_token?: string;
-  refresh_token?: string;
+  user: {
+    id: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  };
 }
 
 const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       authorization: {
         params: {
-          prompt: 'consent',
-          access_type: 'offline',
-          response_type: 'code',
-          scope: 'openid email profile',
+          prompt: 'select_account',
         },
       },
     }),
   ],
   callbacks: {
-    async signIn({ user, account }) {
-      console.log('SignIn callback initiated', { user, account });
-      try {
-        const client = await clientPromise;
-        const db = client.db();
-        const userCollection: Collection = db.collection('users');
+    async signIn({ user, account, profile }) {
+      if (account?.provider === 'google') {
+        try {
+          const client = await clientPromise;
+          const db = client.db();
+          const userCollection: Collection = db.collection('users');
 
-        console.log('Checking for existing user');
-        const existingUser = await userCollection.findOne({
-          email: user.email,
-        });
+          const existingUser = await userCollection.findOne({
+            email: user.email,
+          });
 
-        if (existingUser) {
-          console.log('Existing user found, deleting');
-          await userCollection.deleteOne({ email: user.email });
+          if (existingUser) {
+            // Update existing user
+            await userCollection.updateOne(
+              { email: user.email },
+              { $set: { name: user.name, image: user.image } },
+            );
+          } else {
+            // Create new user
+            await userCollection.insertOne({
+              name: user.name,
+              email: user.email,
+              image: user.image,
+              createdAt: new Date(),
+            });
+          }
+
+          return true;
+        } catch (error) {
+          console.error('Error in signIn callback:', error);
+          return false;
         }
-
-        console.log('Creating new user');
-        await createNewUser(userCollection, user, account);
-
-        console.log('SignIn process completed successfully');
-        return true;
-      } catch (error) {
-        console.error('Error in signIn callback:', error);
-        return false;
       }
+      return true;
     },
     async jwt({ token, account }) {
       if (account) {
@@ -63,44 +68,30 @@ const authOptions: NextAuthOptions = {
       }
       return token;
     },
-    async session({ session, token }): Promise<ExtendedSession> {
+    async session({
+      session,
+      token,
+    }: {
+      session: Session;
+      token: JWT;
+    }): Promise<ExtendedSession> {
       return {
         ...session,
         accessToken: token.accessToken as string,
+        user: {
+          ...session.user,
+          id: token.sub ?? '',
+        },
       };
     },
+  },
+  pages: {
+    signIn: '/login',
   },
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: 'jwt',
   },
-  pages: {
-    signIn: '/login',
-  },
 };
 
-async function createNewUser(
-  userCollection: Collection,
-  user: User,
-  account: Account | null,
-) {
-  const newUser = {
-    name: user.name,
-    email: user.email,
-    image: user.image,
-    accounts: {
-      google: account
-        ? {
-            providerAccountId: account.providerAccountId,
-            accessToken: account.access_token,
-            refreshToken: account.refresh_token,
-          }
-        : null,
-    },
-  };
-  await userCollection.insertOne(newUser);
-}
-
-const handler = NextAuth(authOptions);
-
-export { handler as GET, handler as POST };
+export default NextAuth(authOptions);

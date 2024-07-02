@@ -1,13 +1,37 @@
 'use client';
 
+import React, { useState, useEffect } from 'react';
 import { BsSuitHeart } from 'react-icons/bs';
 import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center">
+    <div className="relative h-10 w-32">
+      <div className="absolute inset-0 animate-pulse rounded-full bg-gradient-to-r from-purple-400 to-pink-400 opacity-75"></div>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="h-7 w-7 animate-spin rounded-full border-4 border-white border-t-transparent shadow-md"></div>
+      </div>
+    </div>
+  </div>
+);
+
 export default function Top() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (status !== 'loading') {
+      setIsLoading(false);
+    }
+  }, [status]);
+
+  const handleSignOut = async () => {
+    setIsLoading(true);
+    await signOut();
+  };
 
   return (
     <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
@@ -30,14 +54,16 @@ export default function Top() {
             </li>
           </ul>
           <div className="flex items-center justify-center gap-4">
-            {session && session.user ? (
+            {isLoading ? (
+              <LoadingSpinner />
+            ) : session && session.user ? (
               <>
                 <span className="max-w-[150px] truncate text-sm font-medium">
                   {session.user.name}
                 </span>
                 <button
-                  onClick={() => signOut()}
-                  className="rounded bg-red-500 px-4 py-2 text-sm font-bold text-white transition-colors duration-200 hover:bg-red-600"
+                  onClick={handleSignOut}
+                  className="rounded bg-red-500 px-4 py-2 text-sm font-bold text-white transition-all duration-300 hover:bg-red-600 hover:shadow-lg"
                 >
                   Cerrar
                 </button>
@@ -45,7 +71,7 @@ export default function Top() {
             ) : (
               <button
                 onClick={() => router.push('/login')}
-                className="rounded bg-yellow-400 px-4 py-2 text-sm font-bold text-gray-800 transition-colors duration-200 hover:bg-yellow-500"
+                className="rounded bg-yellow-400 px-4 py-2 text-sm font-bold text-gray-800 transition-all duration-300 hover:bg-yellow-500 hover:shadow-lg"
               >
                 Iniciar Sesión
               </button>

@@ -1,17 +1,52 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Mail } from 'lucide-react';
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const LoginForm = () => {
-  const handleGoogleSignIn = () => {
-    signIn('google', { callbackUrl: '/' });
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      router.push('/');
+    }
+  }, [status, router]);
+
+  useEffect(() => {
+    const errorMessage = searchParams?.get('error');
+    if (errorMessage) {
+      setError(
+        'Hubo un problema al iniciar sesión. Por favor, inténtalo de nuevo.',
+      );
+    }
+  }, [searchParams]);
+
+  const handleGoogleSignIn = async () => {
+    setError(null);
+    const result = await signIn('google', { callbackUrl: '/' });
+    if (result?.error) {
+      setError(
+        'Hubo un problema al iniciar sesión. Por favor, inténtalo de nuevo.',
+      );
+    }
   };
+
+  if (status === 'loading') {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        Cargando...
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-r from-purple-500 to-pink-500 px-4 sm:px-6 lg:px-8">
@@ -32,6 +67,11 @@ const LoginForm = () => {
           <h2 className="mb-8 text-center text-3xl font-extrabold text-gray-900">
             Bienvenido a Maria Pancha
           </h2>
+          {error && (
+            <div className="mb-4 rounded-md bg-red-50 p-4 text-sm text-red-700">
+              {error}
+            </div>
+          )}
           <div className="space-y-6">
             <Button
               type="button"
@@ -45,12 +85,12 @@ const LoginForm = () => {
           </div>
           <p className="mt-6 text-center text-sm text-gray-600">
             Al iniciar sesión, aceptas nuestros{' '}
-            <a
-              href="http://localhost:3000/login/terms-and-conditions"
+            <Link
+              href="/terms-and-conditions"
               className="font-medium text-purple-600 hover:text-purple-500"
             >
               Términos y Condiciones
-            </a>
+            </Link>
           </p>
         </CardContent>
       </Card>

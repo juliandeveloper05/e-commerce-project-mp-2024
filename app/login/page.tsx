@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Mail } from 'lucide-react';
@@ -9,17 +9,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-const LoginForm = () => {
-  const router = useRouter();
-  const { data: session, status } = useSession();
+const ErrorHandler = () => {
   const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
-
-  useEffect(() => {
-    if (status === 'authenticated') {
-      router.push('/');
-    }
-  }, [status, router]);
 
   useEffect(() => {
     const errorMessage = searchParams?.get('error');
@@ -29,6 +21,24 @@ const LoginForm = () => {
       );
     }
   }, [searchParams]);
+
+  return error ? (
+    <div className="mb-4 rounded-md bg-red-50 p-4 text-sm text-red-700">
+      {error}
+    </div>
+  ) : null;
+};
+
+const LoginForm = () => {
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      router.push('/');
+    }
+  }, [status, router]);
 
   const handleGoogleSignIn = async () => {
     setError(null);
@@ -67,6 +77,9 @@ const LoginForm = () => {
           <h2 className="mb-8 text-center text-3xl font-extrabold text-gray-900">
             Bienvenido a Maria Pancha
           </h2>
+          <Suspense fallback={<div>Cargando...</div>}>
+            <ErrorHandler />
+          </Suspense>
           {error && (
             <div className="mb-4 rounded-md bg-red-50 p-4 text-sm text-red-700">
               {error}

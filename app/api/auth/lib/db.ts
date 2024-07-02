@@ -1,4 +1,3 @@
-// This approach is taken from https://github.com/vercel/next.js/tree/canary/examples/with-mongodb
 import { MongoClient, ServerApiVersion } from 'mongodb';
 
 if (!process.env.MONGODB_URL) {
@@ -18,8 +17,6 @@ let client;
 let clientPromise: Promise<MongoClient>;
 
 if (process.env.NODE_ENV === 'development') {
-  // En modo desarrollo, usa una variable global para preservar el valor
-  // a través de recargas de módulos causadas por HMR (Hot Module Replacement).
   let globalWithMongo = global as typeof globalThis & {
     _mongoClientPromise?: Promise<MongoClient>;
   };
@@ -30,15 +27,15 @@ if (process.env.NODE_ENV === 'development') {
   }
   clientPromise = globalWithMongo._mongoClientPromise;
 } else {
-  // En modo producción, es mejor no usar una variable global.
   client = new MongoClient(url, options);
   clientPromise = client.connect();
 }
 
-// Función para verificar la conexión
 async function checkConnection() {
   try {
+    console.log('Attempting to connect to MongoDB...');
     const connectedClient = await clientPromise;
+    console.log('Client promise resolved, attempting to ping database...');
     await connectedClient.db().command({ ping: 1 });
     console.log('Successfully connected to MongoDB for NextAuth');
     return true;
@@ -48,14 +45,12 @@ async function checkConnection() {
   }
 }
 
-// Verifica la conexión al iniciar
-checkConnection();
+checkConnection().then((result) => {
+  console.log('MongoDB connection check result:', result);
+});
 
-// Exporta la promesa del MongoClient con alcance de módulo.
-// Al hacer esto en un módulo separado, el cliente puede ser compartido entre funciones.
 export default clientPromise;
 
-// Para uso con NextAuth, exporta una función que devuelve el cliente conectado
 export async function getMongoClient(): Promise<MongoClient> {
   return await clientPromise;
 }

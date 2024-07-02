@@ -50,14 +50,6 @@ const LoginForm = () => {
     }
   };
 
-  if (status === 'loading') {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        Cargando...
-      </div>
-    );
-  }
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-r from-purple-500 to-pink-500 px-4 sm:px-6 lg:px-8">
       <Card className="w-full max-w-md overflow-hidden shadow-2xl">

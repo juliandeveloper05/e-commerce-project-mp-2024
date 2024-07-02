@@ -88,6 +88,7 @@ async function createNewUser(
     name: user.name,
     email: user.email,
     image: user.image,
+    loginCount: 1,
     accounts: {
       google: account
         ? {
@@ -97,6 +98,7 @@ async function createNewUser(
           }
         : null,
     },
+    createdAt: new Date(),
   };
   await userCollection.insertOne(newUser);
 }

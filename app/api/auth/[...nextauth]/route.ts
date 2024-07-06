@@ -1,4 +1,5 @@
-import NextAuth, { NextAuthOptions } from 'next-auth';
+import NextAuth, { NextAuthOptions, Session } from 'next-auth';
+import { JWT } from 'next-auth/jwt';
 import GoogleProvider from 'next-auth/providers/google';
 import clientPromise from '../lib/db';
 
@@ -10,7 +11,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async session({ session, token }) {
+    async session({ session, token }: { session: Session; token: JWT }) {
       if (session.user) {
         const client = await clientPromise;
         const db = client.db();
@@ -25,7 +26,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   session: {
-    strategy: 'jwt',
+    strategy: 'jwt' as const,
   },
 };
 

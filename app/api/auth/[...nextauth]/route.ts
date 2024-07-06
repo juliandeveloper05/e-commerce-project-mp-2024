@@ -1,9 +1,8 @@
-import NextAuth, { NextAuthOptions, Session } from 'next-auth';
-import { JWT } from 'next-auth/jwt';
+import NextAuth, { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import clientPromise from '../lib/db';
 
-export const authOptions: NextAuthOptions = {
+const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -11,7 +10,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async session({ session, token }: { session: Session; token: JWT }) {
+    async session({ session, token }) {
       if (session.user) {
         const client = await clientPromise;
         const db = client.db();
@@ -26,9 +25,11 @@ export const authOptions: NextAuthOptions = {
     },
   },
   session: {
-    strategy: 'jwt' as const,
+    strategy: 'jwt',
   },
 };
 
 const handler = NextAuth(authOptions);
+
 export { handler as GET, handler as POST };
+export default authOptions;

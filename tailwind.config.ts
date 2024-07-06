@@ -15,6 +15,15 @@ const config: Config = {
         primary: '#f13a01',
         secondary: '#ffa500',
       },
+      backgroundImage: {
+        'grid-pattern': `
+          linear-gradient(to right, #e5e7eb 1px, transparent 1px),
+          linear-gradient(to bottom, #e5e7eb 1px, transparent 1px)
+        `,
+      },
+      backgroundSize: {
+        'grid-pattern': '20px 20px',
+      },
     },
     keyframes: {
       shimmer: {
@@ -26,4 +35,5 @@ const config: Config = {
   },
   plugins: [require('@tailwindcss/forms')],
 };
+
 export default config;

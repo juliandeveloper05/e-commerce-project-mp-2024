@@ -5,7 +5,7 @@ import ProductsSection from './components/productCard/ProductSection/ProductsSec
 
 export default function Page() {
   return (
-    <section className="bg-grid-pattern">
+    <section className="">
       <main className="hero flex flex-col items-center justify-center p-4 md:flex-row md:p-14">
         {/*TEXTO*/}
         <div className="md:w-1/2 md:pr-8">

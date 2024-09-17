@@ -1,5 +1,3 @@
-## Next.js App Router Course - Starter
+## E-Commerce Plush Slippers
 
-This is the starter template for the Next.js App Router Course. It contains the starting code for the dashboard application.
-
-For more information, see the [course curriculum](https://nextjs.org/learn) on the Next.js Website.
+An e-commerce website for wholesale distribution of premium handcrafted plush slippers. Built with React, Node.js

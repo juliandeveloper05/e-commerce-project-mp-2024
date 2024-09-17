@@ -12,11 +12,17 @@ const config: Config = {
         '13': 'repeat(13, minmax(0, 1fr))',
       },
       colors: {
-        blue: {
-          400: '#2589FE',
-          500: '#0070F3',
-          600: '#2F6FEB',
-        },
+        primary: '#f13a01',
+        secondary: '#ffa500',
+      },
+      backgroundImage: {
+        'grid-pattern': `
+          linear-gradient(to right, #e5e7eb 1px, transparent 1px),
+          linear-gradient(to bottom, #e5e7eb 1px, transparent 1px)
+        `,
+      },
+      backgroundSize: {
+        'grid-pattern': '20px 20px',
       },
     },
     keyframes: {
@@ -29,4 +35,5 @@ const config: Config = {
   },
   plugins: [require('@tailwindcss/forms')],
 };
+
 export default config;

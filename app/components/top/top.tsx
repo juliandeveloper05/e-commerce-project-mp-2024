@@ -1,59 +1,25 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { BsSuitHeart } from 'react-icons/bs';
 import Link from 'next/link';
-import { signOut, useSession } from 'next-auth/react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 export default function Top() {
-  const { data: session, update: updateSession } = useSession();
+  const { data: session } = useSession();
   const router = useRouter();
-  const [newName, setNewName] = useState('');
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [updateMessage, setUpdateMessage] = useState('');
 
   const handleSignOut = async () => {
-    await signOut();
+    await signOut({ redirect: false });
+    router.push('/'); // Redirige al usuario a la página de inicio después de cerrar sesión
   };
 
-  const handleUpdateName = async () => {
-    if (!newName.trim()) return;
-
-    setIsUpdating(true);
-    setUpdateMessage('');
-
-    try {
-      const response = await fetch('/api/user/update-user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: newName }),
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log(result.message);
-
-        // Actualizar la sesión localmente
-        await updateSession({
-          ...session,
-          user: { ...session?.user, name: newName },
-        });
-
-        setNewName('');
-      } else {
-        const errorText = await response.text();
-        console.error('Error updating name:', errorText);
-        setUpdateMessage('Error al actualizar el nombre');
-      }
-    } catch (error) {
-      console.error('Error updating name:', error);
-      setUpdateMessage('Error al actualizar el nombre');
-    } finally {
-      setIsUpdating(false);
-    }
+  const handleSignIn = async () => {
+    await signIn('auth0', {
+      callbackUrl: '/account',
+      prompt: 'login', // Fuerza una nueva autenticación cada vez
+    });
   };
 
   return (
@@ -85,25 +51,6 @@ export default function Top() {
                 >
                   {session.user.name || 'Usuario'}
                 </Link>
-
-                {/*
-                  <input
-                  type="text"
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  placeholder="Nuevo nombre"
-                  className="rounded px-2 py-1 text-black"
-                />
-                */}
-                {/*
-                <button
-                  onClick={handleUpdateName}
-                  disabled={isUpdating}
-                  className="rounded bg-green-500 px-4 py-2 text-sm font-bold text-white transition-all duration-300 hover:bg-green-600 hover:shadow-lg disabled:bg-gray-400"
-                >
-                  {isUpdating ? 'Actualizando...' : 'Actualizar Nombre'}
-                </button>
-                */}
                 <button
                   onClick={handleSignOut}
                   className="rounded bg-red-500 px-4 py-2 text-sm font-bold text-white transition-all duration-300 hover:bg-red-600 hover:shadow-lg"
@@ -113,7 +60,7 @@ export default function Top() {
               </>
             ) : (
               <button
-                onClick={() => router.push('/login')}
+                onClick={handleSignIn}
                 className="rounded bg-yellow-400 px-4 py-2 text-sm font-bold text-gray-800 transition-all duration-300 hover:bg-yellow-500 hover:shadow-lg"
               >
                 Iniciar Sesión
@@ -121,17 +68,6 @@ export default function Top() {
             )}
           </div>
         </div>
-        {updateMessage && (
-          <div
-            className={`mt-2 text-center text-sm ${
-              updateMessage.includes('Error')
-                ? 'text-red-300'
-                : 'text-green-300'
-            }`}
-          >
-            {updateMessage}
-          </div>
-        )}
       </div>
     </div>
   );

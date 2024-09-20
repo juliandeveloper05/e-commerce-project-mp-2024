@@ -5,6 +5,7 @@ import Top from './components/top/top';
 import { Poppins, Roboto } from 'next/font/google';
 import { Metadata } from 'next';
 import Providers from './Providers';
+import { UserProvider } from '../app/contexts/UserContext';
 
 const poppins = Poppins({
   subsets: ['latin'],

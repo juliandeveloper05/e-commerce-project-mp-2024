@@ -35,10 +35,6 @@ export default function Share() {
         <WhatsappIcon size={38} />
       </WhatsappShareButton>
 
-      <LinkedinShareButton url={shareUrl}>
-        <LinkedinIcon size={38} />
-      </LinkedinShareButton>
-
       <TelegramShareButton url={shareUrl}>
         <TelegramIcon size={38} />
       </TelegramShareButton>

@@ -42,9 +42,15 @@ const ProductDetails = ({ slug }) => {
               <h1 className="mb-4 text-center text-3xl font-bold md:text-left">
                 {product.name}
               </h1>
+              {/*
+              Aca por el momento voy a sacar el precio ya que la clienta de la pagina quiere que no
+              tenga precio
+              */}
+              {/* 
               <p className="mb-4 text-center text-2xl font-semibold md:text-left">
                 ${product.price}
               </p>
+              */}
               <p className="mb-8 text-center text-gray-700 md:text-left">
                 {product.description || 'Sin descripción'}
               </p>

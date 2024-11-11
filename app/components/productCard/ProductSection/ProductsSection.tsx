@@ -1,52 +1,80 @@
+'use client';
+import { useEffect, useState } from 'react';
 import ProductCard from '../ProductCard';
-import db from '../../../utils/db';
-import Product from '../../../model/Product';
+import type { Product } from '../../../types/product';
+import styles from './ProductsSection.module.css';
 
-interface Product {
-  _id: string;
-  name: string;
-  price: number;
-  slug: string;
-  imageSrc: string;
-}
+export default function ProductsSection() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-export default async function ProductsSection() {
-  try {
-    await db.connectDb();
-    const products: Product[] = await Product.find({});
-    await db.disconnectDb();
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/products');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setProducts(data);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        setError('Error al cargar los productos');
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchProducts();
+  }, []);
+
+  if (loading) {
     return (
-      <div>
-        <div className="  my-8  mb-5 text-center text-[28px] font-semibold leading-tight  md:mt-16  md:text-[34px]">
-          Todos los Productos
-        </div>
-        <div className="-my-1 mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 md:my-2 lg:grid-cols-3">
-          {products.map((product: Product, index) => {
-            if (product._id) {
-              return (
-                <ProductCard
-                  key={product._id}
-                  id={`product-${index}`}
-                  imageSrc={product.imageSrc}
-                  name={product.name}
-                  price={product.price}
-                  slug={product.slug}
-                />
-              );
-            } else {
-              return (
-                <div key={product.name}>
-                  <p>Error: ID de producto no válido</p>
-                </div>
-              );
-            }
-          })}
-        </div>
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingSpinner}></div>
+        <p>Cargando productos...</p>
       </div>
     );
-  } catch (err) {
-    console.error('Error al obtener los productos:', err);
-    return <p>Error al cargar los productos</p>;
   }
+
+  if (error) {
+    return (
+      <div className={styles.errorContainer}>
+        <p>{error}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className={styles.retryButton}
+        >
+          Intentar nuevamente
+        </button>
+      </div>
+    );
+  }
+
+  if (!products.length) {
+    return (
+      <div className={styles.emptyContainer}>
+        <p>No hay productos disponibles</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.productsSection}>
+      <div className={styles.productsGrid}>
+        {products.map((product) => (
+          <ProductCard
+            key={product._id}
+            id={product._id}
+            name={product.name}
+            price={product.price}
+            imageSrc={product.imageSrc}
+            slug={product.slug}
+          />
+        ))}
+      </div>
+    </div>
+  );
 }

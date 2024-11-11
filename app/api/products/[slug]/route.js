@@ -1,26 +1,20 @@
-import { connectDb, disconnectDb } from '../../../utils/db';
-import Product from '../..../../../../model/Product';
+import { NextResponse } from 'next/server';
+import { dbConnect } from '../../../utils/db';
+import Product from '../../../model/Product';
 
-export async function GET(request) {
-  const slug = request.nextUrl.pathname.split('/').pop();
-
+export async function GET() {
   try {
-    await connectDb();
-    const product = await Product.findOne({ slug });
+    await dbConnect();
+    const products = await Product.find({})
+      .sort({ createdAt: -1 })
+      .select('_id name price imageSrc slug');
 
-    if (!product) {
-      return new Response(JSON.stringify({ error: 'Producto no encontrado' }), {
-        status: 404,
-      });
-    }
-
-    return new Response(JSON.stringify(product), { status: 200 });
-  } catch (err) {
-    console.error('Error al obtener el producto:', err);
-    return new Response(JSON.stringify({ error: 'Error en el servidor' }), {
-      status: 500,
-    });
-  } finally {
-    await disconnectDb();
+    return NextResponse.json(products);
+  } catch (error) {
+    console.error('Error al obtener productos:', error);
+    return NextResponse.json(
+      { error: 'Error al cargar los productos' },
+      { status: 500 },
+    );
   }
 }

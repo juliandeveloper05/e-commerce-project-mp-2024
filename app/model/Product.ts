@@ -1,5 +1,31 @@
 import mongoose from 'mongoose';
 
+// Interfaz para el objeto size
+interface Size {
+  size: string;
+}
+
+// Interfaz principal del producto
+export interface IProduct extends mongoose.Document {
+  name: string;
+  price: number;
+  slug: string;
+  imageSrc: string;
+  imageSwiper?: string[];
+  description?: string;
+  sizes?: Size[];
+}
+
+const sizeSchema = new mongoose.Schema(
+  {
+    size: {
+      type: String,
+      required: true,
+    },
+  },
+  { _id: false },
+);
+
 const productSchema = new mongoose.Schema(
   {
     name: {
@@ -7,33 +33,32 @@ const productSchema = new mongoose.Schema(
       required: [true, 'Por favor ingrese el nombre del producto'],
       trim: true,
     },
+    price: {
+      type: Number,
+      required: [true, 'Por favor ingrese el precio del producto'],
+      min: [0, 'El precio no puede ser negativo'],
+    },
     slug: {
       type: String,
       required: [true, 'Por favor ingrese el slug del producto'],
       unique: true,
       trim: true,
     },
-    description: {
-      type: String,
-      required: [true, 'Por favor ingrese la descripción del producto'],
-    },
-    price: {
-      type: Number,
-      required: [true, 'Por favor ingrese el precio del producto'],
-      min: [0, 'El precio no puede ser negativo'],
-    },
     imageSrc: {
       type: String,
       required: [true, 'Por favor ingrese la URL de la imagen del producto'],
     },
-    category: {
-      type: String,
-      required: [true, 'Por favor seleccione una categoría'],
+    imageSwiper: {
+      type: [String],
+      default: undefined,
     },
-    stock: {
-      type: Number,
-      required: [true, 'Por favor ingrese el stock del producto'],
-      min: [0, 'El stock no puede ser negativo'],
+    description: {
+      type: String,
+      default: undefined,
+    },
+    sizes: {
+      type: [sizeSchema],
+      default: undefined,
     },
   },
   {
@@ -42,6 +67,6 @@ const productSchema = new mongoose.Schema(
 );
 
 const Product =
-  mongoose.models.Product || mongoose.model('Product', productSchema);
+  mongoose.models.Product || mongoose.model<IProduct>('Product', productSchema);
 
 export default Product;

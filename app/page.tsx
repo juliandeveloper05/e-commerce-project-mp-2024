@@ -1,49 +1,11 @@
-import React from 'react';
-import Image from 'next/image';
-import FancyButton from './ui/Fancy-Button';
+import HeroSection from './components/hero-section/HeroSection';
 import ProductsSection from './components/productCard/ProductSection/ProductsSection';
 
 export default function Page() {
   return (
-    <section className="">
-      <main className="hero flex flex-col items-center justify-center p-4 md:flex-row md:p-14">
-        {/*TEXTO*/}
-        <div className="md:w-1/2 md:pr-8">
-          <h1 className="leading-noose my-5 text-3xl font-semibold md:text-4xl">
-            Abraza la calidez, escapa del frío con{' '}
-            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              MP PANTUFLONES
-            </span>
-          </h1>
-          <p className="my-6 text-gray-500">
-            Experimenta la calidez y el estilo con nuestras pantuflas diseñadas
-            para alejar el frío, ofreciendo confort y suavidad en cada paso.
-            Deja atrás el frío con nuestras pantuflas llenas de estilo
-          </p>
-
-          {/*BOTONES*/}
-          <div className="flex hidden justify-center md:block md:justify-start">
-            <FancyButton text="Descargue el Catalago" icon={undefined} />
-          </div>
-        </div>
-
-        {/*IMAGEN*/}
-        <div className="flex flex-col justify-center md:mt-0 md:w-1/2 md:flex-row">
-          <Image
-            src="/logo3.jpg"
-            alt="pantuflas"
-            objectFit="contain"
-            width={420}
-            height={420}
-            className="cover mb-8 md:mb-0"
-          />
-          {/* Botón para dispositivos móviles */}
-          <div className="flex justify-center md:hidden">
-            <FancyButton text="Descargue el Catalago" icon={undefined} />
-          </div>
-        </div>
-      </main>
+    <main>
+      <HeroSection />
       <ProductsSection />
-    </section>
+    </main>
   );
 }

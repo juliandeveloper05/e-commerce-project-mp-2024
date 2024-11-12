@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
-import { config } from '../../config/env';
+import { getEnvVariable } from './env';
+
+const MONGODB_URL = getEnvVariable('MONGODB_URL');
 
 interface GlobalMongo {
   conn: typeof mongoose | null;
@@ -7,62 +9,52 @@ interface GlobalMongo {
 }
 
 declare global {
-  var mongoose: GlobalMongo | undefined;
+  // eslint-disable-next-line no-var
+  var mongoose: GlobalMongo;
 }
-
-let cached = global.mongoose || { conn: null, promise: null };
 
 if (!global.mongoose) {
-  global.mongoose = { conn: null, promise: null };
-  cached = global.mongoose;
+  global.mongoose = {
+    conn: null,
+    promise: null,
+  };
 }
 
-async function dbConnect() {
-  if (cached.conn) {
-    console.log('Usando conexión existente a MongoDB');
-    return cached.conn;
-  }
-
-  if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
-    };
-
-    cached.promise = mongoose
-      .connect(config.mongodb.url, opts)
-      .then((mongoose) => {
-        console.log('Nueva conexión a MongoDB establecida');
-        return mongoose;
-      })
-      .catch((error) => {
-        console.error('Error al conectar con MongoDB:', error);
-        cached.promise = null;
-        throw error;
-      });
-  }
-
+export async function dbConnect() {
   try {
-    cached.conn = await cached.promise;
-  } catch (e) {
-    cached.promise = null;
-    throw e;
-  }
-
-  return cached.conn;
-}
-
-async function dbDisconnect() {
-  try {
-    if (cached.conn) {
-      await mongoose.disconnect();
-      cached.conn = null;
-      cached.promise = null;
-      console.log('Desconexión exitosa de MongoDB');
+    if (global.mongoose.conn) {
+      console.log('Using existing connection');
+      return global.mongoose.conn;
     }
+
+    if (!global.mongoose.promise) {
+      const opts = {
+        bufferCommands: false,
+      };
+
+      console.log('Creating new connection');
+      global.mongoose.promise = mongoose.connect(MONGODB_URL, opts);
+    }
+
+    global.mongoose.conn = await global.mongoose.promise;
+    return global.mongoose.conn;
   } catch (error) {
-    console.error('Error al desconectar de MongoDB:', error);
+    console.error('MongoDB connection error:', error);
+    global.mongoose.promise = null;
     throw error;
   }
 }
 
-export { dbConnect, dbDisconnect };
+export async function dbDisconnect() {
+  try {
+    if (global.mongoose.conn) {
+      await mongoose.disconnect();
+      global.mongoose.conn = null;
+      global.mongoose.promise = null;
+      console.log('Disconnected from MongoDB');
+    }
+  } catch (error) {
+    console.error('Error disconnecting from MongoDB:', error);
+    throw error;
+  }
+}

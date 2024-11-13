@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { CiShoppingCart } from 'react-icons/ci';
-import { FaInstagram, FaWhatsapp, FaFacebook } from 'react-icons/fa';
+import { FaInstagram, FaFacebook } from 'react-icons/fa';
 import HamburgerIcon from './Hamburguer-Menu/HamburguerIcon';
 
 const Navbar = () => {
@@ -22,7 +22,6 @@ const Navbar = () => {
 
   const toggleMenu = () => {
     setShowMenu(!showMenu);
-
     document.body.style.overflow = !showMenu ? 'hidden' : 'unset';
   };
 
@@ -129,7 +128,7 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Social Links */}
+          {/* Social Links - Removed WhatsApp from here */}
           <div className="mt-auto">
             <div className="flex items-center justify-center gap-6 border-t border-gray-200 pt-6">
               <a
@@ -140,15 +139,6 @@ const Navbar = () => {
               >
                 <span className="sr-only">Instagram</span>
                 <FaInstagram className="h-6 w-6" />
-              </a>
-              <a
-                href="https://wa.me/5491126625292?text=Hola%20Maria%20Pancha%20Pantuflones%2C%20me%20gustar%C3%ADa%20obtener%20m%C3%A1s%20informaci%C3%B3n%20sobre%20sus%20productos."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-600 transition-colors duration-200 hover:text-purple-600"
-              >
-                <span className="sr-only">WhatsApp</span>
-                <FaWhatsapp className="h-6 w-6" />
               </a>
               <a
                 href="https://www.facebook.com/profile.php?id=100091649971681"

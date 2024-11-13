@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 
 const HeroSection = () => {
   const [isHoveredCTA, setIsHoveredCTA] = useState(false);
@@ -43,8 +42,7 @@ const HeroSection = () => {
   };
 
   return (
-    <div className="relative min-h-[calc(100vh-64px)] w-full overflow-hidden bg-gradient-to-br from-purple-50 via-white to-pink-50">
-      {/* Fondo animado con patrones modernos */}
+    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-purple-50 via-white to-pink-50">
       <div
         className="absolute inset-0 opacity-10"
         style={{
@@ -57,10 +55,8 @@ const HeroSection = () => {
         }}
       />
 
-      {/* Contenido principal */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex min-h-[calc(100vh-64px)] flex-col items-center justify-center lg:flex-row lg:justify-between lg:gap-12">
-          {/* Texto y botones */}
+        <div className="flex min-h-screen flex-col items-center justify-center lg:flex-row lg:justify-between lg:gap-12">
           <motion.div
             variants={mainContent}
             initial="hidden"
@@ -109,16 +105,16 @@ const HeroSection = () => {
             </motion.p>
 
             <motion.div
-              className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center lg:justify-start"
+              className="mt-8 flex w-full flex-col gap-4 sm:flex-row sm:justify-center lg:justify-start"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1 }}
             >
-              <Link href="/#primer-producto">
+              <a href="/#primer-producto" className="w-full sm:w-auto">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="group relative overflow-hidden rounded-full bg-purple-600 px-8 py-4 text-lg font-semibold text-white transition-all hover:shadow-xl"
+                  className="group relative w-full overflow-hidden rounded-full bg-purple-600 px-8 py-4 text-lg font-semibold text-white transition-all hover:shadow-xl sm:w-auto"
                   onMouseEnter={() => setIsHoveredCTA(true)}
                   onMouseLeave={() => setIsHoveredCTA(false)}
                 >
@@ -132,12 +128,12 @@ const HeroSection = () => {
                   </span>
                   <div className="absolute inset-0 -z-0 bg-gradient-to-r from-purple-600 to-pink-500 opacity-0 transition-opacity group-hover:opacity-100" />
                 </motion.button>
-              </Link>
+              </a>
 
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center justify-center rounded-full border-2 border-purple-600 px-8 py-4 text-lg font-semibold text-purple-600 transition-all hover:bg-purple-50 hover:shadow-lg"
+                className="flex w-full items-center justify-center rounded-full border-2 border-purple-600 px-8 py-4 text-lg font-semibold text-purple-600 transition-all hover:bg-purple-50 hover:shadow-lg sm:w-auto"
               >
                 <ShoppingBag className="mr-2" />
                 Catálogo
@@ -145,7 +141,6 @@ const HeroSection = () => {
             </motion.div>
           </motion.div>
 
-          {/* Imagen principal con efectos */}
           <motion.div
             variants={imageAnimation}
             initial="hidden"
@@ -153,7 +148,6 @@ const HeroSection = () => {
             className="relative mt-8 lg:mt-0"
           >
             <div className="relative">
-              {/* Círculo decorativo animado */}
               <motion.div
                 className="absolute -inset-4 rounded-full bg-gradient-to-r from-purple-200 to-pink-200 opacity-30 blur-xl"
                 animate={{
@@ -167,7 +161,6 @@ const HeroSection = () => {
                 }}
               />
 
-              {/* Contenedor de la imagen principal */}
               <motion.div
                 className="relative h-[300px] w-[300px] overflow-hidden rounded-full border-4 border-white shadow-2xl sm:h-[400px] sm:w-[400px] lg:h-[500px] lg:w-[500px]"
                 whileHover={{ scale: 1.02 }}
@@ -182,7 +175,6 @@ const HeroSection = () => {
                 />
               </motion.div>
 
-              {/* Elementos decorativos flotantes */}
               <motion.div
                 className="absolute -right-4 -top-4 rounded-full bg-white p-4 shadow-lg"
                 animate={{ y: [-10, 10, -10] }}

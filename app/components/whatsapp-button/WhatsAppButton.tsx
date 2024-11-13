@@ -4,9 +4,32 @@ import React, { useEffect, useState } from 'react';
 import { MessageCircle } from 'lucide-react';
 
 const WhatsAppButton = () => {
-  const [buttonPosition, setButtonPosition] = useState<number>(16); // default gap of 4rem
+  const [buttonPosition, setButtonPosition] = useState<number>(16);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
+    // Observer para detectar cambios en el menú hamburguesa
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.target instanceof HTMLElement) {
+          const isOpen = mutation.target.classList.contains('translate-x-0');
+          setIsMenuOpen(isOpen);
+        }
+      });
+    });
+
+    // Elemento del menú hamburguesa a observar
+    const mobileMenu = document.querySelector(
+      '[class*="fixed bottom-0 left-0 right-0 top-[86px]"]',
+    );
+
+    if (mobileMenu) {
+      observer.observe(mobileMenu, {
+        attributes: true,
+        attributeFilter: ['class'],
+      });
+    }
+
     const updateButtonPosition = () => {
       const footer = document.querySelector('footer');
       if (!footer) return;
@@ -24,15 +47,20 @@ const WhatsAppButton = () => {
     };
 
     updateButtonPosition();
-
     window.addEventListener('scroll', updateButtonPosition, { passive: true });
     window.addEventListener('resize', updateButtonPosition, { passive: true });
 
     return () => {
+      observer.disconnect();
       window.removeEventListener('scroll', updateButtonPosition);
       window.removeEventListener('resize', updateButtonPosition);
     };
   }, []);
+
+  // Si el menú está abierto, no mostramos el botón
+  if (isMenuOpen) {
+    return null;
+  }
 
   return (
     <a
@@ -48,17 +76,13 @@ const WhatsAppButton = () => {
         justify-center rounded-full bg-green-500
         text-white transition-all duration-300
         ease-in-out hover:scale-110 hover:bg-green-600
-        hover:shadow-lg
+        hover:shadow-lg lg:flex
+        ${isMenuOpen ? 'hidden' : 'flex'}
       `}
     >
       <div className="relative">
-        {/* Efecto de pulso */}
         <div className="absolute -inset-2 animate-ping rounded-full bg-green-500 opacity-75"></div>
-
-        {/* Icono de WhatsApp */}
         <MessageCircle className="relative h-8 w-8 text-white" />
-
-        {/* Tooltip CHAT */}
         <span className="absolute -top-8 left-1/2 -translate-x-1/2 transform rounded-md bg-gray-800 px-2 py-1 text-xs text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100">
           CHAT
         </span>

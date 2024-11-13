@@ -22,7 +22,7 @@ const Navbar = () => {
 
   const toggleMenu = () => {
     setShowMenu(!showMenu);
-    // Prevent scrolling when menu is open
+
     document.body.style.overflow = !showMenu ? 'hidden' : 'unset';
   };
 

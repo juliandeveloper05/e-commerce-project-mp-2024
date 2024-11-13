@@ -1,4 +1,3 @@
-/* Navbar.module.css */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -13,7 +12,7 @@
 
 .mobileMenu {
   position: fixed;
-  top: 86px; /* Ajusta según la altura de tu navbar */
+  top: 86px;
   left: 0;
   right: 0;
   bottom: 0;

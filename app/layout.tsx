@@ -6,6 +6,7 @@ import { Poppins, Roboto } from 'next/font/google';
 import { Metadata } from 'next';
 import Providers from './Providers';
 import { UserProvider } from '../app/contexts/UserContext';
+import WhatsAppButton from './components/whatsapp-button/WhatsAppButton';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -45,6 +46,7 @@ export default function RootLayout({
           </section>
           {params.slug}
           <Footer />
+          <WhatsAppButton />
         </Providers>
       </body>
     </html>

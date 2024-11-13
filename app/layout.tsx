@@ -39,10 +39,15 @@ export default function RootLayout({
     <html lang="en" className={`${poppins.variable} ${roboto.variable}`}>
       <body>
         <Providers>
-          <section>
+          <section className="min-h-screen">
             <Top />
             <Navbar />
-            <main>{children}</main>
+            {/* Contenedor principal con espaciado responsivo */}
+            <main className="relative mt-[86px] sm:mt-[96px] md:mt-[80px] lg:mt-[10px]">
+              <div className="flex min-h-[calc(80vh-40px)] flex-col">
+                {children}
+              </div>
+            </main>
           </section>
           {params.slug}
           <Footer />

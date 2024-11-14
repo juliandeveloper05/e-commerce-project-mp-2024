@@ -8,27 +8,24 @@ const WhatsAppButton = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
-    // Observer para detectar cambios en el menú hamburguesa
+    const handleMenuStateChange = () => {
+      // Verificar si el html tiene overflow: hidden (menú abierto)
+      setIsMenuOpen(document.documentElement.style.overflow === 'hidden');
+    };
+
+    // Observer para detectar cambios en el estilo del html
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
-        if (mutation.target instanceof HTMLElement) {
-          const isOpen = mutation.target.classList.contains('translate-x-0');
-          setIsMenuOpen(isOpen);
+        if (mutation.attributeName === 'style') {
+          handleMenuStateChange();
         }
       });
     });
 
-    // Elemento del menú hamburguesa a observar
-    const mobileMenu = document.querySelector(
-      '[class*="fixed bottom-0 left-0 right-0 top-[86px]"]',
-    );
-
-    if (mobileMenu) {
-      observer.observe(mobileMenu, {
-        attributes: true,
-        attributeFilter: ['class'],
-      });
-    }
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['style'],
+    });
 
     const updateButtonPosition = () => {
       const footer = document.querySelector('footer');
@@ -77,7 +74,6 @@ const WhatsAppButton = () => {
         text-white transition-all duration-300
         ease-in-out hover:scale-110 hover:bg-green-600
         hover:shadow-lg lg:flex
-        ${isMenuOpen ? 'hidden' : 'flex'}
       `}
     >
       <div className="relative">

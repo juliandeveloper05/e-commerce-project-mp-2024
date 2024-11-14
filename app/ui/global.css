@@ -124,3 +124,20 @@
     background-image: radial-gradient(var(--tw-gradient-stops));
   }
 }
+
+/* FOR HERO SECTION / ANIMATED BACKGROUND */
+
+@layer utilities {
+  .bg-gradient-radial {
+    background-image: radial-gradient(
+      circle at center,
+      var(--tw-gradient-stops)
+    );
+  }
+
+  .shadow-glow {
+    box-shadow:
+      0 0 15px rgba(255, 255, 255, 0.8),
+      0 0 30px rgba(147, 51, 234, 0.4);
+  }
+}

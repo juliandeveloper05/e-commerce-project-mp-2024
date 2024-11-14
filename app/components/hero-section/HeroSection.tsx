@@ -1,19 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
 
 const HeroSection = () => {
   const [isHoveredCTA, setIsHoveredCTA] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const mainContent = {
     hidden: { opacity: 0, y: 20 },
@@ -42,26 +35,15 @@ const HeroSection = () => {
   };
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-purple-50 via-white to-pink-50">
-      <div
-        className="absolute inset-0 opacity-10"
-        style={{
-          backgroundImage: `
-            radial-gradient(circle at 20% 30%, purple 1px, transparent 1px),
-            radial-gradient(circle at 80% 70%, pink 1px, transparent 1px)
-          `,
-          backgroundSize: '50px 50px',
-          transform: `translateY(${scrollY * 0.2}px)`,
-        }}
-      />
-
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div className="relative min-h-screen w-full overflow-hidden">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex min-h-screen flex-col items-center justify-center lg:flex-row lg:justify-between lg:gap-12">
+          {/* Contenido principal */}
           <motion.div
             variants={mainContent}
             initial="hidden"
             animate="visible"
-            className="relative z-10 max-w-xl text-center lg:text-left"
+            className="relative max-w-xl text-center lg:text-left"
           >
             <h1 className="space-y-2">
               <motion.span
@@ -141,6 +123,7 @@ const HeroSection = () => {
             </motion.div>
           </motion.div>
 
+          {/* Imagen principal con efectos */}
           <motion.div
             variants={imageAnimation}
             initial="hidden"
@@ -148,6 +131,7 @@ const HeroSection = () => {
             className="relative mt-8 lg:mt-0"
           >
             <div className="relative">
+              {/* Efecto de resplandor animado */}
               <motion.div
                 className="absolute -inset-4 rounded-full bg-gradient-to-r from-purple-200 to-pink-200 opacity-30 blur-xl"
                 animate={{
@@ -161,6 +145,7 @@ const HeroSection = () => {
                 }}
               />
 
+              {/* Contenedor de imagen principal */}
               <motion.div
                 className="relative h-[300px] w-[300px] overflow-hidden rounded-full border-4 border-white shadow-2xl sm:h-[400px] sm:w-[400px] lg:h-[500px] lg:w-[500px]"
                 whileHover={{ scale: 1.02 }}
@@ -168,13 +153,16 @@ const HeroSection = () => {
               >
                 <Image
                   src="/hero-image.jpg"
-                  alt="Maria Pancha Logo"
+                  alt="Hero Image"
                   fill
+                  sizes="(max-width: 768px) 300px, (max-width: 1024px) 400px, 500px"
                   className="object-cover"
                   priority
+                  quality={90}
                 />
               </motion.div>
 
+              {/* Elementos decorativos animados */}
               <motion.div
                 className="absolute -right-4 -top-4 rounded-full bg-white p-4 shadow-lg"
                 animate={{ y: [-10, 10, -10] }}

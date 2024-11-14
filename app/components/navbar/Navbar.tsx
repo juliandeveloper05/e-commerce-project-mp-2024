@@ -1,13 +1,42 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { CiShoppingCart } from 'react-icons/ci';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { FaInstagram, FaFacebook } from 'react-icons/fa';
-import HamburgerIcon from './Hamburguer-Menu/HamburguerIcon';
+import {
+  ShoppingBag,
+  Home,
+  Info,
+  Phone,
+  Book,
+  ShoppingCart,
+} from 'lucide-react';
+import HamburgerIconAnotherVersion from './HamburgerIconAnotherVersion';
+import Image from 'next/image';
 
-const Navbar = () => {
+interface MenuItem {
+  title: string;
+  icon: React.ComponentType;
+  href: string;
+}
+
+const CartButton = () => (
+  <motion.button
+    whileHover={{ scale: 1.02 }}
+    whileTap={{ scale: 0.98 }}
+    className="flex items-center gap-2 rounded-full bg-purple-500 px-6 py-3 text-white shadow-lg transition-all hover:shadow-xl"
+  >
+    <div className="relative">
+      <ShoppingCart className="h-5 w-5" />
+      <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-white text-xs font-bold text-purple-600">
+        0
+      </span>
+    </div>
+    <span className="text-sm font-medium">Mi Carrito</span>
+  </motion.button>
+);
+
+const Navbar: React.FC = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -22,138 +51,163 @@ const Navbar = () => {
 
   const toggleMenu = () => {
     setShowMenu(!showMenu);
-    document.body.style.overflow = !showMenu ? 'hidden' : 'unset';
+    document.documentElement.style.overflow = !showMenu ? 'hidden' : '';
   };
 
+  const menuItems: MenuItem[] = [
+    { title: 'INICIO', icon: Home, href: '/' },
+    { title: 'TODOS LOS PRODUCTOS', icon: ShoppingBag, href: '/productos' },
+    { title: 'SOBRE MP', icon: Info, href: '/sobre-mp' },
+    { title: 'CONTACTO', icon: Phone, href: '/contacto' },
+    { title: 'CATÁLOGO', icon: Book, href: '/catalogo' },
+  ];
+
   return (
-    <nav
-      className={`fixed left-0 right-0 top-0 z-50 bg-white transition-all duration-300 ${
-        scrolled ? 'shadow-lg' : ''
-      }`}
-    >
-      <div className="flex items-center justify-between px-4 py-2">
-        {/* Logo */}
-        <div className="relative h-[70px] w-[70px]">
-          <Image
-            src="/maria-pancha-logo.jpg"
-            alt="Maria Pancha Logo"
-            fill
-            className="object-contain"
-          />
-        </div>
-
-        {/* Desktop Menu */}
-        <div className="hidden lg:flex lg:items-center lg:gap-8">
-          <Link
-            href="/#primer-producto"
-            className="text-gray-700 hover:text-purple-600"
-          >
-            TODOS LOS PRODUCTOS
-          </Link>
-          <Link href="/about" className="text-gray-700 hover:text-purple-600">
-            SOBRE MP
-          </Link>
-          <Link href="/contact" className="text-gray-700 hover:text-purple-600">
-            CONTACTO
-          </Link>
-          <Link href="/cart" className="text-gray-700 hover:text-purple-600">
-            <CiShoppingCart className="h-6 w-6" />
-          </Link>
-        </div>
-
-        {/* Mobile Menu Button */}
-        <button
-          onClick={toggleMenu}
-          className="lg:hidden"
-          aria-label="Toggle menu"
-        >
-          <HamburgerIcon />
-        </button>
-      </div>
-
-      {/* Mobile Menu Overlay */}
-      <div
-        className={`fixed bottom-0 left-0 right-0 top-[86px] bg-white transition-transform duration-300 lg:hidden ${
-          showMenu ? 'translate-x-0' : 'translate-x-full'
+    <>
+      {/* Main Navbar */}
+      <motion.nav
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ type: 'spring', stiffness: 50, damping: 15 }}
+        className={`fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${
+          scrolled ? 'bg-white/80 shadow-lg backdrop-blur-lg' : 'bg-transparent'
         }`}
       >
-        <div className="flex h-full flex-col bg-gradient-to-b from-purple-50 to-white px-6 py-8">
-          <div className="flex flex-col gap-6">
-            <Link
-              href="/#primer-producto"
-              className="text-lg font-medium text-gray-800 hover:text-purple-600"
-              onClick={toggleMenu}
-            >
-              TODOS LOS PRODUCTOS
-            </Link>
-            <Link
-              href="/about"
-              className="text-lg font-medium text-gray-800 hover:text-purple-600"
-              onClick={toggleMenu}
-            >
-              SOBRE MP
-            </Link>
-            <Link
-              href="/contact"
-              className="text-lg font-medium text-gray-800 hover:text-purple-600"
-              onClick={toggleMenu}
-            >
-              CONTACTO
-            </Link>
-            <Link
-              href="/cart"
-              className="flex items-center gap-2 text-lg font-medium text-gray-800 hover:text-purple-600"
-              onClick={toggleMenu}
-            >
-              <CiShoppingCart className="h-6 w-6" />
-              CARRITO
-            </Link>
-          </div>
+        <div className="flex items-center justify-between px-4 py-2">
+          {/* Logo */}
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className="relative cursor-pointer"
+          >
+            <Image
+              src="/maria-pancha-logo.jpg"
+              alt="Maria Pancha Logo"
+              width={70}
+              height={70}
+              className="rounded-full object-contain"
+            />
+          </motion.div>
 
-          {/* Additional Mobile Menu Items */}
-          <div className="mt-8 flex flex-col gap-4 border-t border-gray-200 pt-8">
-            <Link
-              href="/catalogo"
-              className="text-base text-gray-600 hover:text-purple-600"
-              onClick={toggleMenu}
-            >
-              Catálogo
-            </Link>
-            <Link
-              href="/novedades"
-              className="text-base text-gray-600 hover:text-purple-600"
-              onClick={toggleMenu}
-            >
-              Novedades
-            </Link>
-          </div>
+          {/* Desktop Menu */}
+          <div className="hidden lg:flex lg:items-center lg:gap-8">
+            {menuItems.slice(1, 4).map((item) => (
+              <motion.a
+                key={item.title}
+                href={item.href}
+                className="relative text-gray-700 hover:text-purple-600"
+                whileHover={{ scale: 1.05 }}
+              >
+                {item.title}
+                <motion.span
+                  className="absolute -bottom-1 left-0 h-0.5 w-0 bg-purple-600"
+                  whileHover={{ width: '100%' }}
+                  transition={{ duration: 0.3 }}
+                />
+              </motion.a>
+            ))}
 
-          {/* Social Links - Removed WhatsApp from here */}
-          <div className="mt-auto">
-            <div className="flex items-center justify-center gap-6 border-t border-gray-200 pt-6">
-              <a
-                href="https://www.instagram.com/pantuflonesmariapancha/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-600 transition-colors duration-200 hover:text-purple-600"
-              >
-                <span className="sr-only">Instagram</span>
-                <FaInstagram className="h-6 w-6" />
-              </a>
-              <a
-                href="https://www.facebook.com/profile.php?id=100091649971681"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-600 transition-colors duration-200 hover:text-purple-600"
-              >
-                <span className="sr-only">Facebook</span>
-                <FaFacebook className="h-6 w-6" />
-              </a>
+            <div className="relative cursor-pointer">
+              <CartButton />
             </div>
           </div>
+
+          {/* Mobile Menu Button */}
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={toggleMenu}
+            className="fixed right-4 top-6 z-50 lg:hidden"
+            aria-label="Toggle menu"
+          >
+            <HamburgerIconAnotherVersion
+              isOpen={showMenu}
+              className="text-gray-700 hover:text-purple-600"
+            />
+          </motion.button>
         </div>
-      </div>
-    </nav>
+      </motion.nav>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {showMenu && (
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 20 }}
+            className="fixed bottom-0 left-0 right-0 top-0 z-40 bg-white pt-20 lg:hidden"
+          >
+            <div className="flex h-full flex-col px-6 py-8">
+              {/* Cart Button */}
+              <div className="mb-8 flex justify-center">
+                <CartButton />
+              </div>
+
+              {/* Menu Items */}
+              <div className="flex flex-1 flex-col space-y-4">
+                {menuItems.map((item, index) => {
+                  const Icon = item.icon;
+                  return (
+                    <motion.a
+                      key={item.title}
+                      href={item.href}
+                      className="flex items-center space-x-4 rounded-lg p-4 transition-colors hover:bg-purple-50"
+                      initial={{ x: -50, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: index * 0.1 }}
+                      onClick={toggleMenu}
+                    >
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-100">
+                        <Icon />
+                      </div>
+                      <span className="text-lg font-medium text-gray-700">
+                        {item.title}
+                      </span>
+                    </motion.a>
+                  );
+                })}
+              </div>
+
+              {/* Social Media with Divider */}
+              <div className="mt-auto">
+                {/* Divider Line */}
+                <div className="mb-6">
+                  <div className="h-px bg-gray-200"></div>
+                </div>
+
+                <div className="text-center">
+                  <p className="mb-4 text-sm font-medium text-gray-500">
+                    SÍGUENOS EN REDES SOCIALES
+                  </p>
+                  <div className="flex justify-center space-x-8">
+                    <motion.a
+                      href="https://instagram.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-600 transition-colors hover:text-pink-600"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <FaInstagram className="h-6 w-6" />
+                    </motion.a>
+                    <motion.a
+                      href="https://facebook.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-600 transition-colors hover:text-blue-600"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <FaFacebook className="h-6 w-6" />
+                    </motion.a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 

@@ -17,3 +17,11 @@ export interface Product {
 export type FlattenedProduct = Omit<Product, '_id'> & {
   _id: string | undefined;
 };
+
+export interface ProductCardProps {
+  id: string;
+  name: string;
+  price: number;
+  imageSrc: string;
+  slug: string;
+}

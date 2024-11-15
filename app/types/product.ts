@@ -1,21 +1,19 @@
 // types/product.ts
+interface Size {
+  size: string;
+}
+
 export interface Product {
   _id: string;
   name: string;
   price: number;
-  description: string;
+  description?: string;
   imageSrc: string;
   slug: string;
-  category: string;
-  stock: number;
-  createdAt: string;
-  updatedAt: string;
+  sizes?: Size[];
+  imageSwiper?: string[];
 }
 
-export interface ProductCardProps {
-  id: string;
-  name: string;
-  price: number;
-  imageSrc: string;
-  slug: string;
-}
+export type FlattenedProduct = Omit<Product, '_id'> & {
+  _id: string | undefined;
+};

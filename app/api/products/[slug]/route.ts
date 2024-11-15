@@ -2,52 +2,35 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { dbConnect } from '../../../utils/db';
 import Product from '../../../model/Product';
-
-interface RouteParams {
-  params: {
-    slug: string;
-  };
-}
+import { FlattenedProduct } from '../../../types/product';
 
 export async function GET(
   request: NextRequest,
-  { params }: RouteParams,
-): Promise<NextResponse> {
+  { params }: { params: { slug: string } },
+) {
   try {
-    // Validate slug parameter
-    if (!params.slug) {
-      return NextResponse.json(
-        { error: 'Product slug is required' },
-        { status: 400 },
-      );
-    }
-
-    // Connect to database
     await dbConnect();
 
-    // Find product by slug with specific field selection
     const product = await Product.findOne({ slug: params.slug })
       .select('name price description imageSrc sizes slug imageSwiper')
-      .lean();
+      .lean<FlattenedProduct>();
 
-    // Handle product not found
     if (!product) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
-    // Add cache headers for better performance
-    const headers = {
-      'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=59',
+    // Create a safe copy of the product with guaranteed arrays
+    const safeProduct = {
+      ...product,
+      sizes: Array.isArray(product.sizes) ? product.sizes : [],
+      imageSwiper: Array.isArray(product.imageSwiper)
+        ? product.imageSwiper
+        : [],
     };
 
-    // Return successful response
-    return NextResponse.json(product, {
-      status: 200,
-      headers,
-    });
+    return NextResponse.json(safeProduct);
   } catch (error) {
-    console.error('[Product API] Error fetching product:', error);
-
+    console.error('Product fetch error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 },

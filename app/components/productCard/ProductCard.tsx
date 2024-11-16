@@ -1,11 +1,12 @@
 'use client';
+
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ProductCardProps } from '../../types/product';
 
 export default function ProductCard({
-  id,
+  _id, // Cambiamos 'id' por '_id'
   name,
   price,
   imageSrc,

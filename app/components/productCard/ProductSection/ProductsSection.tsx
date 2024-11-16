@@ -67,7 +67,7 @@ export default function ProductsSection() {
         {products.map((product) => (
           <ProductCard
             key={product._id}
-            id={product._id}
+            _id={product._id} // Cambiamos 'id' por '_id'
             name={product.name}
             price={product.price}
             imageSrc={product.imageSrc}

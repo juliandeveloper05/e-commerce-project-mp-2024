@@ -5,9 +5,9 @@ interface Size {
   size: string;
 }
 
-// Interfaz principal para el producto
+// types/product.ts
 export interface Product {
-  _id: string;
+  _id: string; // Aseguramos que usamos '_id'
   name: string;
   price: number;
   description?: string;
@@ -15,12 +15,7 @@ export interface Product {
   slug: string;
   sizes?: Size[];
   imageSwiper?: string[];
-  category?: string;
-  inStock?: boolean;
-  rating?: number;
-  numReviews?: number;
 }
-
 // Props para el componente ProductGrid
 export interface ProductGridProps {
   products: Product[];
@@ -28,7 +23,11 @@ export interface ProductGridProps {
 
 // Props para la tarjeta de producto individual
 export interface ProductCardProps {
-  product: Product;
+  _id: string; // Cambiamos 'id' por '_id' para coincidir con MongoDB
+  name: string;
+  price: number;
+  imageSrc: string;
+  slug: string;
 }
 
 // Tipo para el estado de filtrado

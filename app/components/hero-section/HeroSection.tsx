@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const HeroSection = () => {
   const [isHoveredCTA, setIsHoveredCTA] = useState(false);
@@ -35,10 +36,11 @@ const HeroSection = () => {
   };
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden">
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex min-h-screen flex-col items-center justify-center lg:flex-row lg:justify-between lg:gap-12">
-          {/* Contenido principal */}
+    <div className="relative w-full overflow-hidden pb-24 sm:pb-32 md:pb-40 lg:pb-0">
+      {/* Contenido principal */}
+      <div className="relative z-10 mx-auto max-w-7xl px-4 pt-20 sm:px-6 lg:px-8">
+        <div className="flex min-h-[calc(100vh-6rem)] flex-col items-center justify-center lg:min-h-screen lg:flex-row lg:justify-between lg:gap-12">
+          {/* Texto y botones */}
           <motion.div
             variants={mainContent}
             initial="hidden"
@@ -92,7 +94,7 @@ const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1 }}
             >
-              <a href="/#primer-producto" className="w-full sm:w-auto">
+              <Link href="/productos" className="w-full sm:w-auto">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -110,20 +112,22 @@ const HeroSection = () => {
                   </span>
                   <div className="absolute inset-0 -z-0 bg-gradient-to-r from-purple-600 to-pink-500 opacity-0 transition-opacity group-hover:opacity-100" />
                 </motion.button>
-              </a>
+              </Link>
 
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex w-full items-center justify-center rounded-full border-2 border-purple-600 px-8 py-4 text-lg font-semibold text-purple-600 transition-all hover:bg-purple-50 hover:shadow-lg sm:w-auto"
-              >
-                <ShoppingBag className="mr-2" />
-                Catálogo
-              </motion.button>
+              <Link href="/productos" className="w-full sm:w-auto">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex w-full items-center justify-center rounded-full border-2 border-purple-600 px-8 py-4 text-lg font-semibold text-purple-600 transition-all hover:bg-purple-50 hover:shadow-lg sm:w-auto"
+                >
+                  <ShoppingBag className="mr-2" />
+                  Catálogo
+                </motion.button>
+              </Link>
             </motion.div>
           </motion.div>
 
-          {/* Imagen principal con efectos */}
+          {/* Imagen del héroe */}
           <motion.div
             variants={imageAnimation}
             initial="hidden"
@@ -166,7 +170,11 @@ const HeroSection = () => {
               <motion.div
                 className="absolute -right-4 -top-4 rounded-full bg-white p-4 shadow-lg"
                 animate={{ y: [-10, 10, -10] }}
-                transition={{ duration: 4, repeat: Infinity }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
               >
                 <span className="block h-6 w-6 rounded-full bg-gradient-to-r from-purple-500 to-pink-500" />
               </motion.div>
@@ -174,7 +182,12 @@ const HeroSection = () => {
               <motion.div
                 className="absolute -bottom-4 -left-4 rounded-full bg-white p-4 shadow-lg"
                 animate={{ y: [10, -10, 10] }}
-                transition={{ duration: 4, repeat: Infinity }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                  delay: 0.5,
+                }}
               >
                 <span className="block h-6 w-6 rounded-full bg-gradient-to-r from-pink-500 to-purple-500" />
               </motion.div>

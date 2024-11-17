@@ -11,6 +11,7 @@ const InnovativeProductGrid: React.FC<ProductGridProps> = memo(
   ({ products }) => {
     const [hoveredItem, setHoveredItem] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
 
     // Animaciones y variantes
     const containerVariants = {
@@ -122,7 +123,16 @@ const InnovativeProductGrid: React.FC<ProductGridProps> = memo(
                 onHoverEnd={handleHoverEnd}
                 layout
               >
-                <Link href={`/producto/${product.slug}`}>
+                <Link
+                  href={`/producto/${product.slug}`}
+                  className="block"
+                  onClick={(e) => {
+                    // Permitir la navegación solo si no se hizo clic en el botón de favoritos
+                    if ((e.target as HTMLElement).closest('button')) {
+                      e.preventDefault();
+                    }
+                  }}
+                >
                   <div className="relative overflow-hidden rounded-xl bg-white p-4 shadow-lg transition-all duration-300 hover:shadow-xl">
                     {/* Efecto de máscara circular */}
                     <motion.div
@@ -147,11 +157,25 @@ const InnovativeProductGrid: React.FC<ProductGridProps> = memo(
 
                       {/* Botón de favoritos */}
                       <motion.button
-                        className="absolute right-2 top-2 rounded-full bg-white p-2 shadow-md"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setFavorites((prev) => ({
+                            ...prev,
+                            [product._id]: !prev[product._id],
+                          }));
+                        }}
+                        className="absolute right-2 top-2 z-20 rounded-full bg-white/90 p-2 shadow-lg transition-all hover:bg-white"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                       >
-                        <Heart className="h-5 w-5 text-gray-600 transition-colors hover:text-pink-500" />
+                        <Heart
+                          className={`h-5 w-5 transition-all duration-300 ${
+                            favorites[product._id]
+                              ? 'fill-red-500 text-red-500'
+                              : 'text-gray-600 hover:text-red-500'
+                          }`}
+                        />
                       </motion.button>
                     </div>
 

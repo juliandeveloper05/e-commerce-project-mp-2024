@@ -156,7 +156,7 @@ const HeroSection = () => {
                 transition={{ duration: 0.3 }}
               >
                 <Image
-                  src="/hero-image.jpg"
+                  src="/maria-pancha-logo.jpg"
                   alt="Hero Image"
                   fill
                   sizes="(max-width: 768px) 300px, (max-width: 1024px) 400px, 500px"

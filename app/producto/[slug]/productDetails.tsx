@@ -73,7 +73,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ slug }) => {
     toast.success('Producto guardado en favoritos');
   };
 
-  // Loading state
   if (isLoading) return <Loading />;
 
   // Error state

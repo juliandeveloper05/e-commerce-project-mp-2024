@@ -13,7 +13,7 @@ interface ImageGalleryProps {
 
 export const ImageGallery: React.FC<ImageGalleryProps> = ({
   mainImage,
-  images = [], // Provide default empty array
+  images = [],
   productName,
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);

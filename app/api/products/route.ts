@@ -4,35 +4,25 @@ import { dbConnect } from '../../utils/db';
 import Product from '../../model/Product';
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  try {
-    // Connect to database
-    await dbConnect();
+  // Add debug logging
+  console.log('Request path:', request.nextUrl.pathname);
+  console.log('Image paths being requested:', request.nextUrl.searchParams);
 
-    // Get all products with specific field selection
+  try {
+    await dbConnect();
     const products = await Product.find({})
       .select('name price imageSrc slug')
       .sort({ createdAt: -1 })
       .lean();
 
-    // Handle no products found
-    if (!products || products.length === 0) {
-      return NextResponse.json(
-        { message: 'No products found' },
-        { status: 404 },
-      );
-    }
-
-    // Add cache headers for better performance
-    const headers = {
-      'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=59',
-    };
-
-    return NextResponse.json(products, {
-      status: 200,
-      headers,
+    // Log product image paths
+    products.forEach((product) => {
+      console.log('Product image path:', product.imageSrc);
     });
+
+    return NextResponse.json(products);
   } catch (error) {
-    console.error('[Products API] Error fetching products:', error);
+    console.error('[Products API] Error:', error);
     return NextResponse.json(
       { error: 'Error al cargar los productos' },
       { status: 500 },

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { ProductCardProps } from '../../types/product';
 
 export default function ProductCard({
-  _id, // Cambiamos 'id' por '_id'
+  _id,
   name,
   price,
   imageSrc,
@@ -23,6 +23,10 @@ export default function ProductCard({
             height={500}
             className="h-full w-full object-cover object-center lg:h-full lg:w-full"
             priority
+            onError={(e) => {
+              console.error(`Error loading image: ${imageSrc}`);
+              e.currentTarget.src = '/fallback-image.jpg';
+            }}
           />
         </Link>
       </div>

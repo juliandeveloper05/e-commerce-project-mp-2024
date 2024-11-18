@@ -1,13 +1,10 @@
-// types/product.ts
-
 // Interfaz para tallas de los productos
 interface Size {
   size: string;
 }
 
-// types/product.ts
 export interface Product {
-  _id: string; // Aseguramos que usamos '_id'
+  _id: string;
   name: string;
   price: number;
   description?: string;
@@ -16,7 +13,7 @@ export interface Product {
   sizes?: Size[];
   imageSwiper?: string[];
 }
-// Props para el componente ProductGrid
+
 export interface ProductGridProps {
   products: Product[];
 }

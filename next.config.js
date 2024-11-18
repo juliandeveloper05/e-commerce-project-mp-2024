@@ -4,10 +4,9 @@ const nextConfig = {
     domains: ['localhost'],
     remotePatterns: [
       {
-        protocol: 'http',
-        hostname: 'localhost',
-        port: '3000',
-        pathname: '/productCard/**',
+        protocol: 'https',
+        hostname: '*.vercel.app',
+        pathname: '/products/**',
       },
     ],
   },

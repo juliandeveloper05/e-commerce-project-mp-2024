@@ -50,8 +50,8 @@ const Footer = () => {
             <h3 className="mb-2 text-base font-bold">Sobre Nosotros</h3>
             <p className="mb-2 mt-3">
               MP María Pancha Pantuflones: Pantuflones de peluche artesanales
-              con tela plush premium y bordados personalizados. Talles Chico,
-              Mediano y Grande. Encuéntrenos en whatsapp, Facebook e Instagram.
+              con tela plush premium. Talles Chico, Mediano y Grande.
+              Encuéntrenos en whatsapp, Facebook e Instagram.
             </p>
             <p>
               &copy; {new Date().getFullYear()} MP María Pancha. Todos los

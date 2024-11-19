@@ -2,19 +2,18 @@
 
 import React, { useEffect, useState } from 'react';
 import { MessageCircle } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { useCatalog } from '@/app/contexts/CatalogContext';
 
 const WhatsAppButton = () => {
   const [buttonPosition, setButtonPosition] = useState<number>(16);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isCatalogOpen } = useCatalog();
 
   useEffect(() => {
     const handleMenuStateChange = () => {
+      // Verificar si el html tiene overflow: hidden (menú abierto)
       setIsMenuOpen(document.documentElement.style.overflow === 'hidden');
     };
 
+    // Observer para detectar cambios en el estilo del html
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (mutation.attributeName === 'style') {
@@ -55,26 +54,25 @@ const WhatsAppButton = () => {
     };
   }, []);
 
-  // No mostrar el botón si el catálogo está abierto o el menú está abierto
-  if (isMenuOpen || isCatalogOpen) {
+  // Si el menú está abierto, no mostramos el botón
+  if (isMenuOpen) {
     return null;
   }
 
   return (
-    <motion.a
+    <a
       href="https://wa.me/5491126625292?text=Hola%20Maria%20Pancha%20Pantuflones%2C%20me%20gustar%C3%ADa%20obtener%20m%C3%A1s%20informaci%C3%B3n%20sobre%20sus%20productos."
       target="_blank"
       rel="noopener noreferrer"
-      initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      whileHover={{ scale: 1.1 }}
-      style={{ bottom: `${buttonPosition}px` }}
+      style={{
+        bottom: `${buttonPosition}px`,
+      }}
       className={`
         group fixed right-8
         z-50 flex h-16 w-16 items-center
         justify-center rounded-full bg-green-500
         text-white transition-all duration-300
-        ease-in-out hover:bg-green-600
+        ease-in-out hover:scale-110 hover:bg-green-600
         hover:shadow-lg lg:flex
       `}
     >
@@ -85,7 +83,7 @@ const WhatsAppButton = () => {
           CHAT
         </span>
       </div>
-    </motion.a>
+    </a>
   );
 };
 

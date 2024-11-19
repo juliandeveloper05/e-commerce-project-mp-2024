@@ -6,7 +6,6 @@ import { Metadata, Viewport } from 'next';
 import WhatsAppButton from './components/whatsapp-button/WhatsAppButton';
 import Loading from './components/Loading/Loading';
 import { Suspense } from 'react';
-import { CatalogProvider } from './contexts/CatalogContext';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -59,16 +58,14 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${poppins.variable} ${roboto.variable}`}>
       <body className="min-h-screen bg-gradient-to-br from-pink-50 to-white">
-        <CatalogProvider>
-          <div className="flex min-h-screen flex-col">
-            <Navbar />
-            <Suspense fallback={<Loading />}>
-              <main className="relative flex-1">{children}</main>
-            </Suspense>
-            <Footer />
-            <WhatsAppButton />
-          </div>
-        </CatalogProvider>
+        <div className="flex min-h-screen flex-col">
+          <Navbar />
+          <Suspense fallback={<Loading />}>
+            <main className="relative flex-1">{children}</main>
+          </Suspense>
+          <Footer />
+          <WhatsAppButton />
+        </div>
 
         <script
           dangerouslySetInnerHTML={{

@@ -1,95 +1,106 @@
 import React from 'react';
-import Container from '@/app/ui/Container';
-import FooterList from './FooterList';
 import Link from 'next/link';
-import { MdFacebook } from 'react-icons/md';
-import { FaInstagram, FaWhatsapp } from 'react-icons/fa';
-import Payment from './Payment';
+import Image from 'next/image';
+import { FaInstagram, FaFacebook, FaWhatsapp, FaHeart } from 'react-icons/fa';
 
 const Footer = () => {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="mt-0 bg-slate-700 text-sm text-slate-200">
-      <Container>
-        <div className="flex flex-col justify-between pb-8 pt-16 md:flex-row">
-          <FooterList>
-            <h3 className="mb-2 text-base font-bold">Nuestra Pagina</h3>
-            <Link href="/" legacyBehavior>
-              <a className="hover:text-[#ff02ab]">Perfil de MP</a>
-            </Link>
-            <Link href="/#primer-producto" legacyBehavior>
-              <a className="hover:text-[#ff02ab]">Todos los Productos</a>
-            </Link>
-            <Link href="/about" legacyBehavior>
-              <a className="hover:text-[#ff02ab]">Sobre MP</a>
-            </Link>
-            <Link href="/account" legacyBehavior>
-              <a className="hover:text-[#ff02ab]">Cuenta</a>
-            </Link>
-          </FooterList>
-          <FooterList>
-            <h3 className="mb-2 text-base font-bold">Servicio al Cliente</h3>
-            <Link
-              href="https://wa.me/5491126625292?text=Hola%20Maria%20Pancha%20Pantuflones%2C%20me%20gustar%C3%ADa%20obtener%20m%C3%A1s%20informaci%C3%B3n%20sobre%20sus%20productos."
-              legacyBehavior
-            >
-              <a className="flex items-center hover:text-[#ff02ab]">
-                Contactanos
-              </a>
-            </Link>
-            <Link href="/" legacyBehavior>
-              <a className="hover:text-[#ff02ab]">Politica de Envios</a>
-            </Link>
-            <Link href="/" legacyBehavior>
-              <a className="hover:text-[#ff02ab]">Unknown</a>
-            </Link>
-            <Link href="/" legacyBehavior>
-              <a className="hover:text-[#ff02ab]">Preguntas Frecuentes</a>
-            </Link>
-          </FooterList>
-          <div className="mb-6 w-full md:mb-0 md:w-1/3">
-            <h3 className="mb-2 text-base font-bold">Sobre Nosotros</h3>
-            <p className="mb-2 mt-3">
-              MP María Pancha Pantuflones: Pantuflones de peluche artesanales
-              con tela plush premium. Talles Chico, Mediano y Grande.
-              Encuéntrenos en whatsapp, Facebook e Instagram.
-            </p>
-            <p>
-              &copy; {new Date().getFullYear()} MP María Pancha. Todos los
-              derechos reservados.
-            </p>
-          </div>
-          <FooterList>
-            <h3 className="mb-2 text-base font-bold">Nuestras Redes</h3>
-            <div className="flex gap-2">
-              <Link
-                href="https://wa.me/5491126625292?text=Hola%20Maria%20Pancha%20Pantuflones%2C%20me%20gustar%C3%ADa%20obtener%20m%C3%A1s%20informaci%C3%B3n%20sobre%20sus%20productos."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="cursor-pointer hover:text-[#ff02ab]"
-              >
-                <FaWhatsapp size={24} />
+    <footer className="mt-auto bg-slate-700 py-8 text-sm text-slate-200">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Nuestra Página */}
+          <div className="flex flex-col space-y-4">
+            <h3 className="text-lg font-bold">Nuestra Página</h3>
+            <div className="flex flex-col space-y-2">
+              <Link href="/" className="hover:text-purple-400">
+                Inicio
               </Link>
-              <Link
-                href="https://www.instagram.com/pantuflonesmariapancha/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="cursor-pointer hover:text-[#ff02ab]"
-              >
-                <FaInstagram size={24} />
+              <Link href="/productos" className="hover:text-purple-400">
+                Productos
               </Link>
-              <Link
-                href="https://www.facebook.com/profile.php?id=100091649971681"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="cursor-pointer hover:text-[#ff02ab]"
-              >
-                <MdFacebook size={24} />
+              <Link href="/sobre-mp" className="hover:text-purple-400">
+                Sobre MP
               </Link>
             </div>
-            <Payment className={'mt-0'} />
-          </FooterList>
+          </div>
+
+          {/* Sobre Nosotros */}
+          <div className="flex flex-col space-y-4">
+            <h3 className="text-lg font-bold">Sobre Nosotros</h3>
+            <p className="text-sm">
+              MP María Pancha Pantuflones: Pantuflones de peluche artesanales
+              con tela plush premium. Talles Chico, Mediano y Grande.
+            </p>
+          </div>
+
+          {/* Redes Sociales */}
+          <div className="flex flex-col space-y-4">
+            <h3 className="text-lg font-bold">Síguenos en Redes</h3>
+            <div className="flex space-x-4">
+              <a
+                href="https://wa.me/5491126625292"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition-colors hover:text-green-400"
+              >
+                <FaWhatsapp size={24} />
+              </a>
+              <a
+                href="https://instagram.com/pantuflonesmariapancha"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition-colors hover:text-pink-400"
+              >
+                <FaInstagram size={24} />
+              </a>
+              <a
+                href="https://facebook.com/profile.php?id=100091649971681"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition-colors hover:text-blue-400"
+              >
+                <FaFacebook size={24} />
+              </a>
+            </div>
+
+            <div className="mt-4">
+              <Image
+                src="/payment/mercadopago.webp"
+                alt="Mercado Pago"
+                width={60}
+                height={36}
+                className="rounded-md"
+              />
+            </div>
+          </div>
         </div>
-      </Container>
+
+        {/* Línea divisoria */}
+        <div className="my-8 border-t border-slate-600" />
+
+        {/* Copyright y Créditos del desarrollador */}
+        <div className="flex flex-col items-center justify-between space-y-4 text-center text-sm sm:flex-row sm:space-y-0">
+          <p>
+            © {currentYear} MP María Pancha. Todos los derechos reservados.
+          </p>
+
+          <div className="flex items-center space-x-1">
+            <span>Desarrollado con</span>
+            <FaHeart className="mx-1 text-red-500" />
+            <span>por</span>
+            <a
+              href="https://juliansoto-portfolio.vercel.app/es"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ml-1 font-medium text-purple-400 transition-colors hover:text-purple-300"
+            >
+              Julian Javier Soto
+            </a>
+          </div>
+        </div>
+      </div>
     </footer>
   );
 };

@@ -10,11 +10,13 @@ import {
   Phone,
   Book,
   ShoppingCart,
+  User,
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import HamburgerIconAnotherVersion from './HamburgerIconAnotherVersion';
+import { useSession } from 'next-auth/react';
 
 // Types
 interface MenuItem {
@@ -90,6 +92,7 @@ const Navbar: React.FC = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   // Menu items configuration
   const menuItems: MenuItem[] = [
@@ -110,18 +113,16 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Menu toggle handler
   const toggleMenu = () => {
     setShowMenu(!showMenu);
     document.documentElement.style.overflow = !showMenu ? 'hidden' : '';
   };
 
-  // Active link checker
-  const isActiveLink = (href: string): boolean => {
+  const isActiveLink = (currentPath: string, href: string): boolean => {
     if (href === '/') {
-      return pathname === '/';
+      return currentPath === '/';
     }
-    return pathname.startsWith(href);
+    return currentPath.startsWith(href);
   };
 
   return (
@@ -162,7 +163,7 @@ const Navbar: React.FC = () => {
                   <li key={item.title}>
                     <NavLink
                       href={item.href}
-                      isActive={isActiveLink(item.href)}
+                      isActive={isActiveLink(pathname, item.href)}
                     >
                       {item.title}
                     </NavLink>
@@ -170,12 +171,33 @@ const Navbar: React.FC = () => {
                 ))}
               </ul>
 
-              {/* Cart Button */}
-              <Link href="/cart">
-                <CartButton />
-              </Link>
-            </div>
+              {/* User and Cart Buttons */}
+              <div className="flex items-center gap-4">
+                <Link href="/login">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex items-center gap-2 rounded-full bg-white/90 px-4 py-3 text-purple-600 shadow-sm transition-all hover:bg-purple-50"
+                  >
+                    {session ? (
+                      <Image
+                        src={session.user?.image || '/default-avatar.png'}
+                        alt="Profile"
+                        width={20}
+                        height={20}
+                        className="rounded-full"
+                      />
+                    ) : (
+                      <User className="h-5 w-5" />
+                    )}
+                  </motion.div>
+                </Link>
 
+                <Link href="/cart">
+                  <CartButton />
+                </Link>
+              </div>
+            </div>
             {/* Mobile Menu Button */}
             <motion.button
               whileTap={{ scale: 0.9 }}
@@ -203,8 +225,29 @@ const Navbar: React.FC = () => {
             className="fixed bottom-0 left-0 right-0 top-0 z-40 bg-white pt-20 lg:hidden"
           >
             <div className="flex h-full flex-col px-6 py-8">
-              {/* Cart Button in Mobile */}
-              <div className="mb-8 flex justify-center">
+              {/* User and Cart Buttons in Mobile */}
+              <div className="mb-8 flex justify-center gap-4">
+                <Link href="/login">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex items-center gap-2 rounded-full bg-white/90 px-4 py-3 text-purple-600 shadow-sm transition-all hover:bg-purple-50"
+                    onClick={toggleMenu}
+                  >
+                    {session ? (
+                      <Image
+                        src={session.user?.image || '/default-avatar.png'}
+                        alt="Profile"
+                        width={20}
+                        height={20}
+                        className="rounded-full"
+                      />
+                    ) : (
+                      <User className="h-5 w-5" />
+                    )}
+                  </motion.div>
+                </Link>
+
                 <Link href="/cart">
                   <div onClick={toggleMenu}>
                     <CartButton />
@@ -216,17 +259,15 @@ const Navbar: React.FC = () => {
               <div className="flex flex-1 flex-col space-y-4">
                 {menuItems.map((item, index) => {
                   const Icon = item.icon;
-                  const isActive = isActiveLink(item.href);
+                  const isActive = isActiveLink(pathname, item.href);
 
                   return (
                     <Link key={item.title} href={item.href}>
                       <motion.div
                         className={`flex items-center space-x-4 rounded-lg p-4 transition-colors
-                          ${
-                            isActive
-                              ? 'bg-purple-50 text-purple-600'
-                              : 'hover:bg-purple-50'
-                          }`}
+            ${
+              isActive ? 'bg-purple-50 text-purple-600' : 'hover:bg-purple-50'
+            }`}
                         initial={{ x: -50, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ delay: index * 0.1 }}
@@ -234,13 +275,13 @@ const Navbar: React.FC = () => {
                       >
                         <div
                           className={`flex h-10 w-10 items-center justify-center rounded-full
-                          ${isActive ? 'bg-purple-100' : 'bg-gray-100'}`}
+            ${isActive ? 'bg-purple-100' : 'bg-gray-100'}`}
                         >
                           <Icon />
                         </div>
                         <span
                           className={`text-lg font-medium
-                          ${isActive ? 'text-purple-600' : 'text-gray-700'}`}
+            ${isActive ? 'text-purple-600' : 'text-gray-700'}`}
                         >
                           {item.title}
                         </span>

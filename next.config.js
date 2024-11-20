@@ -6,6 +6,9 @@ const nextConfig = {
   experimental: {
     serverActions: true,
   },
+  images: {
+    domains: ['localhost', 'lh3.googleusercontent.com'],
+  },
 };
 
 module.exports = nextConfig;

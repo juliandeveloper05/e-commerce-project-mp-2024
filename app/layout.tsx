@@ -3,10 +3,12 @@ import Footer from './components/footer/Footer';
 import Navbar from './components/navbar/Navbar';
 import { Poppins, Roboto } from 'next/font/google';
 import { Metadata, Viewport } from 'next';
+import Providers from './Providers';
 import WhatsAppButton from './components/whatsapp-button/WhatsAppButton';
 import Loading from './components/Loading/Loading';
 import { Suspense } from 'react';
 
+// Configuración de fuentes
 const poppins = Poppins({
   subsets: ['latin'],
   weight: ['400', '700'],
@@ -19,12 +21,14 @@ const roboto = Roboto({
   variable: '--font-roboto',
 });
 
+// Configuración del viewport
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#9333ea',
+  themeColor: '#9333ea', // Color tema para la barra de navegación móvil
 };
 
+// Metadata para SEO
 export const metadata: Metadata = {
   title: 'Maria Pancha | E-Commerce',
   description: 'Encuentra las mejores pantuflas artesanales para tu comodidad',
@@ -50,35 +54,50 @@ export const metadata: Metadata = {
   },
 };
 
+// Componente Layout principal
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" className={`${poppins.variable} ${roboto.variable}`}>
+    <html
+      lang="es"
+      className={`${poppins.variable} ${roboto.variable}`}
+      suppressHydrationWarning
+    >
       <body className="min-h-screen bg-gradient-to-br from-pink-50 to-white">
-        <div className="flex min-h-screen flex-col">
-          <Navbar />
-          <Suspense fallback={<Loading />}>
-            <main className="relative flex-1">{children}</main>
-          </Suspense>
-          <Footer />
-          <WhatsAppButton />
-        </div>
+        <Providers>
+          <div className="flex min-h-screen flex-col">
+            {/* Navegación */}
+            <Navbar />
 
+            {/* Contenido principal con Suspense para loading states */}
+            <Suspense fallback={<Loading />}>
+              <main className="relative flex-1">{children}</main>
+            </Suspense>
+
+            {/* Footer */}
+            <Footer />
+
+            {/* Botón flotante de WhatsApp */}
+            <WhatsAppButton />
+          </div>
+        </Providers>
+
+        {/* Script para manejar la altura del viewport en móviles */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
-             (function() {
-               function setVH() {
-                 let vh = window.innerHeight * 0.01;
-                 document.documentElement.style.setProperty('--vh', \`\${vh}px\`);
-               }
-               setVH();
-               window.addEventListener('resize', setVH);
-             })();
-           `,
+              (function() {
+                function setVH() {
+                  let vh = window.innerHeight * 0.01;
+                  document.documentElement.style.setProperty('--vh', \`\${vh}px\`);
+                }
+                setVH();
+                window.addEventListener('resize', setVH);
+              })();
+            `,
           }}
         />
       </body>

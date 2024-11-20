@@ -1,7 +1,25 @@
-/* globals.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --vh: 1vh;
+}
+
+/* Estilos para el scroll suave */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Fix para la altura en móviles */
+.min-h-screen {
+  min-height: calc(var(--vh, 1vh) * 100);
+}
+
+/* Gradiente personalizado */
+.bg-gradient-custom {
+  background: linear-gradient(to bottom right, var(--tw-gradient-stops));
+}
 
 @media (prefers-color-scheme: dark), (prefers-color-scheme: light) {
   :root {

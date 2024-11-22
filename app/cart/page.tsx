@@ -1,13 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useCart } from '@/app/context/CartContext';
-import { ShoppingBag, Trash2, Share2 } from 'lucide-react';
+import { useState } from 'react';
+import { useCart } from '../context/CartContext';
+import { formatCurrency } from '../utils/format';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
-import { formatCurrency } from '@/app/utils/format';
-import { motion, AnimatePresence } from 'framer-motion';
-import EmptyCart from '../cart/components/EmptyCart';
+import { ShoppingBag, Trash2, ChevronLeft } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 export default function CartPage() {
@@ -19,93 +18,102 @@ export default function CartPage() {
     updateQuantity,
   } = useCart() || {};
 
-  useEffect(() => {
-    // Scroll to top on component mount
-    window.scrollTo(0, 0);
-  }, []);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
-  // Handler para compartir producto
-  const handleShare = async (item: any) => {
+  const handleCheckout = async () => {
+    setIsCheckingOut(true);
     try {
-      const shareData = {
-        title: 'Maria Pancha - Pantuflas',
-        text: `¡Mira estas pantuflas! ${item.name}`,
-        url: window.location.href,
-      };
-
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        // Fallback para navegadores que no soportan Web Share API
-        await navigator.clipboard.writeText(window.location.href);
-        toast.success('¡Link copiado al portapapeles!');
-      }
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      toast.success('Redirigiendo al pago...');
     } catch (error) {
-      console.error('Error sharing:', error);
-      toast.error('Error al compartir el producto');
+      toast.error('Error al procesar el pago');
+    } finally {
+      setIsCheckingOut(false);
     }
   };
 
-  // Si el carrito está vacío, mostrar el nuevo componente EmptyCart
+  // Carrito vacío
   if (!items?.length) {
-    return <EmptyCart />;
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-purple-50 to-white px-4">
+        <div className="text-center">
+          <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gray-100">
+            <ShoppingBag className="h-12 w-12 text-gray-400" />
+          </div>
+          <h2 className="mb-3 text-2xl font-bold text-gray-900">
+            Tu carrito está vacío
+          </h2>
+          <p className="mb-8 text-gray-500">
+            ¿No sabes qué comprar? ¡Miles de productos te esperan!
+          </p>
+          <Link href="/productos">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="inline-flex items-center rounded-full bg-purple-600 px-8 py-3 text-sm font-medium text-white shadow-lg transition-all hover:bg-purple-700"
+            >
+              <ChevronLeft className="mr-2 h-5 w-5" />
+              Volver a productos
+            </motion.button>
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white px-4 py-8">
-      <div className="mx-auto max-w-7xl">
-        {/* Header del carrito */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8 flex items-center justify-between"
-        >
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-white">
+      <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:max-w-7xl lg:px-8">
+        {/* Encabezado */}
+        <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
           <h1 className="text-2xl font-bold text-gray-900">
             Tu Carrito ({itemCount} {itemCount === 1 ? 'producto' : 'productos'}
             )
           </h1>
           <Link href="/productos">
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="text-sm text-purple-600 hover:text-purple-700"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="inline-flex items-center text-sm text-purple-600 hover:text-purple-700"
             >
+              <ChevronLeft className="mr-2 h-4 w-4" />
               Seguir comprando
             </motion.button>
           </Link>
-        </motion.div>
+        </div>
 
+        {/* Grid principal */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
           {/* Lista de productos */}
           <div className="lg:col-span-8">
             <div className="rounded-lg bg-white shadow-lg">
-              <AnimatePresence mode="popLayout">
+              <AnimatePresence>
                 {items.map((item) => (
                   <motion.div
                     key={`${item._id}-${item.size}`}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, x: -100 }}
-                    className="border-b border-gray-200 p-6 last:border-b-0"
+                    exit={{ opacity: 0, y: -20 }}
+                    className="border-b border-gray-200 p-4 last:border-b-0 sm:p-6"
                   >
-                    <div className="flex gap-6">
+                    {/* Contenedor del item */}
+                    <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
                       {/* Imagen del producto */}
-                      <motion.div
-                        className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg"
-                        whileHover={{ scale: 1.05 }}
-                      >
+                      <div className="relative aspect-square h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-gray-50">
                         <Image
                           src={item.imageSrc}
                           alt={item.name}
                           fill
                           className="object-cover"
                           sizes="(max-width: 768px) 96px, 96px"
+                          priority
                         />
-                      </motion.div>
+                      </div>
 
-                      {/* Detalles del producto */}
+                      {/* Detalles y controles */}
                       <div className="flex flex-1 flex-col">
                         <div className="flex items-start justify-between">
+                          {/* Info del producto */}
                           <div>
                             <h3 className="font-medium text-gray-900">
                               {item.name}
@@ -115,33 +123,27 @@ export default function CartPage() {
                             </p>
                           </div>
 
-                          {/* Botones de acción */}
-                          <div className="flex items-center gap-4">
-                            <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                              onClick={() => removeItem(item._id, item.size)}
-                              className="text-gray-400 transition-colors hover:text-red-500"
-                            >
-                              <Trash2 className="h-5 w-5" />
-                            </motion.button>
-                            <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                              onClick={() => handleShare(item)}
-                              className="text-gray-400 transition-colors hover:text-purple-500"
-                            >
-                              <Share2 className="h-5 w-5" />
-                            </motion.button>
-                          </div>
+                          {/* Botón eliminar */}
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => {
+                              removeItem(item._id, item.size);
+                              toast.success('Producto eliminado');
+                            }}
+                            className="ml-4 text-gray-400 transition-colors hover:text-red-500"
+                            aria-label="Eliminar producto"
+                          >
+                            <Trash2 className="h-5 w-5" />
+                          </motion.button>
                         </div>
 
-                        {/* Control de cantidad y precio */}
+                        {/* Controles de cantidad y precio */}
                         <div className="mt-4 flex items-center justify-between">
                           <div className="flex items-center gap-4">
+                            {/* Control de cantidad */}
                             <div className="flex items-center rounded-lg border border-gray-200">
                               <motion.button
-                                whileHover={{ backgroundColor: '#F3F4F6' }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() =>
                                   updateQuantity(
@@ -150,7 +152,7 @@ export default function CartPage() {
                                     Math.max(1, item.quantity - 1),
                                   )
                                 }
-                                className="flex h-8 w-8 items-center justify-center border-r text-gray-600"
+                                className="flex h-8 w-8 items-center justify-center border-r text-gray-600 hover:bg-gray-50"
                               >
                                 -
                               </motion.button>
@@ -158,7 +160,6 @@ export default function CartPage() {
                                 {item.quantity}
                               </span>
                               <motion.button
-                                whileHover={{ backgroundColor: '#F3F4F6' }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() =>
                                   updateQuantity(
@@ -167,15 +168,17 @@ export default function CartPage() {
                                     item.quantity + 1,
                                   )
                                 }
-                                className="flex h-8 w-8 items-center justify-center border-l text-gray-600"
+                                className="flex h-8 w-8 items-center justify-center border-l text-gray-600 hover:bg-gray-50"
                               >
                                 +
                               </motion.button>
                             </div>
+                            {/* Precio unitario */}
                             <div className="text-sm text-gray-500">
                               {formatCurrency(item.price)} c/u
                             </div>
                           </div>
+                          {/* Precio total por item */}
                           <p className="text-lg font-medium text-gray-900">
                             {formatCurrency(item.price * item.quantity)}
                           </p>
@@ -189,15 +192,12 @@ export default function CartPage() {
           </div>
 
           {/* Resumen del pedido */}
-          <motion.div
-            className="lg:col-span-4"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-          >
+          <div className="lg:col-span-4">
             <div className="sticky top-8 rounded-lg bg-white p-6 shadow-lg">
               <h2 className="text-lg font-medium text-gray-900">
                 Resumen del pedido
               </h2>
+
               <div className="mt-6 space-y-4">
                 <div className="flex justify-between">
                   <p className="text-gray-600">Subtotal</p>
@@ -205,10 +205,12 @@ export default function CartPage() {
                     {formatCurrency(total)}
                   </p>
                 </div>
+
                 <div className="flex justify-between">
                   <p className="text-gray-600">Envío</p>
                   <p className="font-medium text-green-600">Gratis</p>
                 </div>
+
                 <div className="border-t border-gray-200 pt-4">
                   <div className="flex justify-between">
                     <p className="text-base font-medium text-gray-900">Total</p>
@@ -216,18 +218,40 @@ export default function CartPage() {
                       {formatCurrency(total)}
                     </p>
                   </div>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Impuestos incluidos
+                  </p>
                 </div>
+              </div>
 
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="mt-6 w-full rounded-lg bg-purple-600 px-4 py-3 text-center font-medium text-white shadow-lg transition-colors hover:bg-purple-700"
-                >
-                  Proceder al pago
-                </motion.button>
+              {/* Botón checkout */}
+              <motion.button
+                whileHover={{ scale: isCheckingOut ? 1 : 1.02 }}
+                whileTap={{ scale: isCheckingOut ? 1 : 0.98 }}
+                onClick={handleCheckout}
+                disabled={isCheckingOut}
+                className="mt-6 w-full rounded-full bg-purple-600 px-4 py-3 text-center font-medium text-white shadow-lg transition-all hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isCheckingOut ? 'Procesando...' : 'Proceder al pago'}
+              </motion.button>
+
+              {/* Métodos de pago */}
+              <div className="mt-6 border-t border-gray-200 pt-6">
+                <p className="mb-2 text-sm text-gray-500">
+                  Métodos de pago aceptados:
+                </p>
+                <div className="flex items-center gap-2">
+                  <Image
+                    src="/payment/mercadopago.webp"
+                    alt="Mercado Pago"
+                    width={60}
+                    height={36}
+                    className="rounded-md"
+                  />
+                </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </div>

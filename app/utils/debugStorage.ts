@@ -1,5 +1,3 @@
-// utils/debugStorage.ts
-
 export const debugLocalStorage = {
   setItem: (key: string, value: string) => {
     try {

@@ -1,3 +1,7 @@
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function CartLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return <section>{children}</section>;
 }

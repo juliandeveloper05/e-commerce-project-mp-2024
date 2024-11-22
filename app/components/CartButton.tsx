@@ -1,17 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ShoppingCart } from 'lucide-react';
-import { useState, useEffect } from 'react';
 import { useCart } from '@/app/context/CartContext';
 
 const CartButton = () => {
   const [isHovered, setIsHovered] = useState(false);
-  const cart = useCart();
-
-  useEffect(() => {
-    console.log('CartButton - Current cart state:', cart);
-  }, [cart]);
+  const { itemCount = 0 } = useCart() || {};
 
   return (
     <motion.button
@@ -23,13 +19,13 @@ const CartButton = () => {
     >
       <div className="relative">
         <ShoppingCart className="h-5 w-5" />
-        {cart?.itemCount > 0 && (
+        {itemCount > 0 && (
           <motion.div
             initial={false}
             animate={{ scale: isHovered ? 1.1 : 1 }}
             className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-white text-xs font-bold text-purple-600"
           >
-            {cart.itemCount}
+            {itemCount}
           </motion.div>
         )}
       </div>

@@ -1,4 +1,3 @@
-// app/lib/auth.ts
 import { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import Auth0Provider from 'next-auth/providers/auth0';

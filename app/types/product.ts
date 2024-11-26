@@ -139,6 +139,11 @@ export interface ProductApiResponse {
   };
 }
 
+// Tipo para producto aplanado (sin _id)
+export type FlattenedProduct = Omit<Product, '_id'> & {
+  _id: string | undefined;
+};
+
 // Tipos para acciones del producto
 export type ProductAction =
   | { type: 'ADD_TO_CART'; payload: CartItem }

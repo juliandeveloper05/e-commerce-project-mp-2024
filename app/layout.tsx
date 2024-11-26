@@ -1,3 +1,4 @@
+// app/layout.tsx
 import { Poppins, Roboto } from 'next/font/google';
 import { Metadata, Viewport } from 'next';
 import { Suspense } from 'react';

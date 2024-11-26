@@ -9,6 +9,7 @@ import { ShoppingCart, Heart, Share2, ArrowLeft } from 'lucide-react';
 import ProductDetailsCarousel from './components/ProductDetailsCarousel';
 import Loading from '@/app/components/Loading/Loading';
 import { useCart } from '@/app/context/CartContext';
+import { useFavorites } from '@/app/context/FavoritesContext';
 import { formatCurrency } from '@/app/utils/format';
 import type { Product } from '../../types/product';
 import Link from 'next/link';
@@ -19,36 +20,57 @@ interface ProductDetailsProps {
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
+// Componente de botón animado reutilizable
+const AnimatedButton = ({
+  onClick,
+  disabled,
+  className,
+  children,
+}: {
+  onClick: () => void;
+  disabled?: boolean;
+  className: string;
+  children: React.ReactNode;
+}) => (
+  <motion.button
+    whileHover={{ scale: disabled ? 1 : 1.02 }}
+    whileTap={{ scale: disabled ? 1 : 0.98 }}
+    onClick={onClick}
+    disabled={disabled}
+    className={className}
+  >
+    {children}
+  </motion.button>
+);
+
 const ProductDetails = ({ slug }: ProductDetailsProps) => {
-  // Estados locales
   const [selectedSize, setSelectedSize] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
-  const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
+  const [showShareMenu, setShowShareMenu] = useState(false);
 
-  // Hooks
   const router = useRouter();
   const { addItem } = useCart();
+  const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
+
   const {
     data: product,
     error,
     isLoading,
   } = useSWR<Product>(`/api/products/${slug}`, fetcher);
 
-  // Efecto para reiniciar estados cuando cambia el producto
   useEffect(() => {
     setSelectedSize('');
     setQuantity(1);
   }, [slug]);
 
-  // Manejadores
   const handleAddToCart = async () => {
-    if (!selectedSize) {
-      toast.error('Por favor selecciona una talla');
+    if (!selectedSize || !product) {
+      toast.error('Por favor selecciona una talla', {
+        id: 'size-error',
+      });
       return;
     }
-
-    if (!product) return;
 
     setIsAddingToCart(true);
     try {
@@ -60,12 +82,37 @@ const ProductDetails = ({ slug }: ProductDetailsProps) => {
         size: selectedSize,
         imageSrc: product.imageSrc,
       });
-      toast.success('¡Producto agregado al carrito!');
     } catch (error) {
       console.error('Error adding to cart:', error);
-      toast.error('Error al agregar al carrito');
+      toast.error('Error al agregar al carrito', {
+        id: 'cart-error',
+      });
     } finally {
       setIsAddingToCart(false);
+    }
+  };
+
+  const handleToggleFavorite = async () => {
+    if (!product) return;
+
+    try {
+      const isFavorite = favorites.some((fav) => fav._id === product._id);
+      if (isFavorite) {
+        await removeFromFavorites(product._id);
+        toast.success('Eliminado de favoritos', {
+          id: `remove-favorite-${product._id}`,
+        });
+      } else {
+        await addToFavorites(product);
+        toast.success('Agregado a favoritos', {
+          id: `add-favorite-${product._id}`,
+        });
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      toast.error('Error al procesar favoritos', {
+        id: 'favorite-error',
+      });
     }
   };
 
@@ -81,23 +128,17 @@ const ProductDetails = ({ slug }: ProductDetailsProps) => {
         await navigator.share(shareData);
       } else {
         await navigator.clipboard.writeText(window.location.href);
-        toast.success('¡Link copiado al portapapeles!');
+        toast.success('¡Link copiado al portapapeles!', {
+          id: 'share-success',
+        });
       }
     } catch (error) {
-      console.error('Error sharing:', error);
-      toast.error('Error al compartir el producto');
+      toast.error('Error al compartir el producto', {
+        id: 'share-error',
+      });
     }
   };
 
-  const handleAddToWishlist = () => {
-    setIsAddingToWishlist(true);
-    setTimeout(() => {
-      setIsAddingToWishlist(false);
-      toast.success('¡Producto guardado en favoritos!');
-    }, 1000);
-  };
-
-  // Estados de carga y error
   if (isLoading) return <Loading />;
   if (error) {
     return (
@@ -116,23 +157,22 @@ const ProductDetails = ({ slug }: ProductDetailsProps) => {
   }
   if (!product) return <div>Producto no encontrado</div>;
 
+  const isFavorite = favorites.some((fav) => fav._id === product._id);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Botón Volver */}
         <Link href="/productos">
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+          <AnimatedButton
+            onClick={() => {}}
             className="mb-8 flex items-center gap-2 text-gray-600 hover:text-purple-600"
           >
             <ArrowLeft className="h-5 w-5" />
             Volver a productos
-          </motion.button>
+          </AnimatedButton>
         </Link>
 
         <div className="lg:grid lg:grid-cols-2 lg:gap-x-8">
-          {/* Galería de imágenes */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -145,7 +185,6 @@ const ProductDetails = ({ slug }: ProductDetailsProps) => {
             />
           </motion.div>
 
-          {/* Información del producto */}
           <div className="lg:pl-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -165,7 +204,6 @@ const ProductDetails = ({ slug }: ProductDetailsProps) => {
               )}
             </motion.div>
 
-            {/* Selector de talla */}
             <div className="mb-8">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-medium text-gray-900">Talla</h3>
@@ -175,10 +213,8 @@ const ProductDetails = ({ slug }: ProductDetailsProps) => {
               </div>
               <div className="mt-4 grid grid-cols-3 gap-4">
                 {['Chico', 'Mediano', 'Grande'].map((size) => (
-                  <motion.button
+                  <AnimatedButton
                     key={size}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
                     onClick={() => setSelectedSize(size)}
                     className={`flex h-14 items-center justify-center rounded-full border-2 text-sm font-medium transition-all
                       ${
@@ -188,42 +224,34 @@ const ProductDetails = ({ slug }: ProductDetailsProps) => {
                       }`}
                   >
                     {size}
-                  </motion.button>
+                  </AnimatedButton>
                 ))}
               </div>
             </div>
 
-            {/* Selector de cantidad */}
             <div className="mb-8">
               <h3 className="text-sm font-medium text-gray-900">Cantidad</h3>
               <div className="mt-4 flex items-center space-x-4">
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
+                <AnimatedButton
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   className="rounded-full bg-gray-100 p-2 text-gray-600 hover:bg-gray-200"
                 >
                   -
-                </motion.button>
+                </AnimatedButton>
                 <span className="w-12 text-center text-lg font-medium">
                   {quantity}
                 </span>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
+                <AnimatedButton
                   onClick={() => setQuantity(quantity + 1)}
                   className="rounded-full bg-gray-100 p-2 text-gray-600 hover:bg-gray-200"
                 >
                   +
-                </motion.button>
+                </AnimatedButton>
               </div>
             </div>
 
-            {/* Botones de acción */}
             <div className="space-y-4">
-              <motion.button
-                whileHover={{ scale: !selectedSize ? 1 : 1.02 }}
-                whileTap={{ scale: !selectedSize ? 1 : 0.98 }}
+              <AnimatedButton
                 onClick={handleAddToCart}
                 disabled={!selectedSize || isAddingToCart}
                 className={`flex h-14 w-full items-center justify-center rounded-full px-6 text-base font-medium text-white shadow-lg transition-all
@@ -239,33 +267,37 @@ const ProductDetails = ({ slug }: ProductDetailsProps) => {
                   : !selectedSize
                   ? 'Selecciona una talla'
                   : 'Agregar al Carrito'}
-              </motion.button>
+              </AnimatedButton>
 
               <div className="flex space-x-4">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={handleAddToWishlist}
-                  disabled={isAddingToWishlist}
-                  className="flex h-14 flex-1 items-center justify-center rounded-full border-2 border-gray-300 px-6 text-base font-medium text-gray-700 transition-all hover:bg-gray-50"
+                <AnimatedButton
+                  onClick={handleToggleFavorite}
+                  className={`flex h-14 flex-1 items-center justify-center rounded-full border-2 
+                    ${
+                      isFavorite
+                        ? 'border-purple-500 bg-purple-50'
+                        : 'border-gray-300'
+                    } 
+                    px-6 text-base font-medium transition-all hover:bg-gray-50`}
                 >
-                  <Heart className="mr-2 h-5 w-5" />
-                  {isAddingToWishlist ? 'Guardando...' : 'Guardar'}
-                </motion.button>
+                  <Heart
+                    className={`mr-2 h-5 w-5 ${
+                      isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'
+                    }`}
+                  />
+                  {isFavorite ? 'Guardado' : 'Guardar'}
+                </AnimatedButton>
 
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                <AnimatedButton
                   onClick={handleShareProduct}
                   className="flex h-14 items-center justify-center rounded-full border-2 border-gray-300 px-6 text-base font-medium text-gray-700 transition-all hover:bg-gray-50"
                 >
                   <Share2 className="mr-2 h-5 w-5" />
                   Compartir
-                </motion.button>
+                </AnimatedButton>
               </div>
             </div>
 
-            {/* Información adicional */}
             <div className="mt-8 border-t border-gray-200 pt-8">
               <div className="prose prose-sm max-w-none text-gray-500">
                 <h3 className="text-lg font-medium text-gray-900">

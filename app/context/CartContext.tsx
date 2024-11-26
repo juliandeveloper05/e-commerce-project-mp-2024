@@ -4,6 +4,7 @@ import { createContext, useContext, useReducer, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import { debugLocalStorage } from '@/app/utils/debugStorage';
 
+// Tipos
 interface CartItem {
   _id: string;
   name: string;
@@ -29,18 +30,15 @@ type CartAction =
   | { type: 'CLEAR_CART' }
   | { type: 'LOAD_CART'; payload: CartState };
 
-const CartContext = createContext<
-  | {
-      items: CartItem[];
-      itemCount: number;
-      total: number;
-      addItem: (item: CartItem) => void;
-      removeItem: (id: string, size: string) => void;
-      updateQuantity: (id: string, size: string, quantity: number) => void;
-      clearCart: () => void;
-    }
-  | undefined
->(undefined);
+interface CartContextType {
+  items: CartItem[];
+  itemCount: number;
+  total: number;
+  addItem: (item: CartItem) => Promise<void>;
+  removeItem: (id: string, size: string) => void;
+  updateQuantity: (id: string, size: string, quantity: number) => void;
+  clearCart: () => void;
+}
 
 const initialState: CartState = {
   items: [],
@@ -48,18 +46,15 @@ const initialState: CartState = {
   total: 0,
 };
 
-function cartReducer(state: CartState, action: CartAction): CartState {
-  console.log('CartReducer - Action:', action.type);
-  console.log('CartReducer - Current State:', state);
+const CartContext = createContext<CartContextType | null>(null);
 
+function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
     case 'ADD_ITEM': {
       if (!state.items) {
-        console.warn('Items array is undefined, initializing empty array');
         state.items = [];
       }
 
-      console.log('Adding item:', action.payload);
       const existingItemIndex = state.items.findIndex(
         (item) =>
           item._id === action.payload._id && item.size === action.payload.size,
@@ -67,14 +62,12 @@ function cartReducer(state: CartState, action: CartAction): CartState {
 
       let newItems;
       if (existingItemIndex >= 0) {
-        console.log('Item exists, updating quantity');
         newItems = state.items.map((item, index) =>
           index === existingItemIndex
             ? { ...item, quantity: item.quantity + action.payload.quantity }
             : item,
         );
       } else {
-        console.log('Adding new item');
         newItems = [...state.items, action.payload];
       }
 
@@ -87,7 +80,6 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         ),
       };
 
-      console.log('New state after addition:', newState);
       debugLocalStorage.setItem('cart', JSON.stringify(newState));
       return newState;
     }
@@ -137,12 +129,12 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       return newState;
     }
 
-    case 'LOAD_CART':
-      return action.payload;
-
     case 'CLEAR_CART':
       debugLocalStorage.removeItem('cart');
       return initialState;
+
+    case 'LOAD_CART':
+      return action.payload;
 
     default:
       return state;
@@ -153,13 +145,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, initialState);
 
   useEffect(() => {
-    console.log('CartProvider - Initializing');
     try {
       const savedCart = debugLocalStorage.getItem('cart');
       if (savedCart) {
-        const parsedCart = JSON.parse(savedCart);
-        console.log('CartProvider - Loading saved cart:', parsedCart);
-        dispatch({ type: 'LOAD_CART', payload: parsedCart });
+        dispatch({ type: 'LOAD_CART', payload: JSON.parse(savedCart) });
       }
     } catch (error) {
       console.error('Error loading cart:', error);
@@ -167,37 +156,67 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const addItem = (item: CartItem) => {
-    console.log('CartProvider - Adding item:', item);
+  const addItem = async (item: CartItem) => {
     try {
       dispatch({ type: 'ADD_ITEM', payload: item });
-      toast.success('Producto agregado al carrito');
+      toast.success('Producto agregado al carrito', {
+        id: `add-${item._id}-${item.size}`,
+        duration: 2000,
+        position: 'bottom-right',
+      });
     } catch (error) {
       console.error('Error adding item to cart:', error);
-      toast.error('Error al agregar al carrito');
+      toast.error('Error al agregar al carrito', {
+        id: `add-error-${item._id}-${item.size}`,
+      });
     }
   };
 
   const removeItem = (id: string, size: string) => {
-    console.log('CartProvider - Removing item:', { id, size });
-    dispatch({ type: 'REMOVE_ITEM', payload: { id, size } });
-    toast.success('Producto eliminado del carrito');
+    try {
+      dispatch({ type: 'REMOVE_ITEM', payload: { id, size } });
+      // Eliminamos la notificación de aquí para evitar duplicados
+    } catch (error) {
+      console.error('Error removing item from cart:', error);
+      toast.error('Error al eliminar el producto', {
+        id: `remove-error-${id}-${size}`,
+      });
+    }
   };
 
   const updateQuantity = (id: string, size: string, quantity: number) => {
     if (quantity < 1) {
-      toast.error('La cantidad debe ser al menos 1');
+      toast.error('La cantidad debe ser al menos 1', {
+        id: `quantity-error-${id}-${size}`,
+      });
       return;
     }
-    dispatch({ type: 'UPDATE_QUANTITY', payload: { id, size, quantity } });
+
+    try {
+      dispatch({ type: 'UPDATE_QUANTITY', payload: { id, size, quantity } });
+    } catch (error) {
+      console.error('Error updating quantity:', error);
+      toast.error('Error al actualizar la cantidad', {
+        id: `update-error-${id}-${size}`,
+      });
+    }
   };
 
   const clearCart = () => {
-    dispatch({ type: 'CLEAR_CART' });
-    toast.success('Carrito vaciado');
+    try {
+      dispatch({ type: 'CLEAR_CART' });
+      toast.success('Carrito vaciado', {
+        id: 'clear-cart',
+      });
+    } catch (error) {
+      console.error('Error clearing cart:', error);
+      toast.error('Error al vaciar el carrito', {
+        id: 'clear-cart-error',
+      });
+    }
   };
 
-  const value = {
+  const value: CartContextType = {
     items: state.items,
     itemCount: state.itemCount,
     total: state.total,
@@ -212,8 +231,35 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
 export const useCart = () => {
   const context = useContext(CartContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useCart must be used within a CartProvider');
   }
   return context;
+};
+
+// Hook opcional para manejar las notificaciones del carrito
+export const useCartNotifications = () => {
+  return {
+    notifyAdded: (id: string, size: string) => {
+      toast.success('Producto agregado al carrito', {
+        id: `add-${id}-${size}`,
+        duration: 2000,
+        position: 'bottom-right',
+      });
+    },
+    notifyRemoved: (id: string, size: string) => {
+      toast.success('Producto eliminado del carrito', {
+        id: `remove-${id}-${size}`,
+        duration: 2000,
+        position: 'bottom-right',
+      });
+    },
+    notifyError: (message: string, id: string) => {
+      toast.error(message, {
+        id,
+        duration: 2000,
+        position: 'bottom-right',
+      });
+    },
+  };
 };

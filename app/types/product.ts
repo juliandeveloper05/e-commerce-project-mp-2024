@@ -1,3 +1,5 @@
+// types/product.ts
+
 // Interfaces base
 export interface Size {
   size: string; // "Chico" | "Mediano" | "Grande"
@@ -83,15 +85,6 @@ export interface ProductGridProps {
   error?: string;
 }
 
-export interface ProductDetailsProps {
-  slug: string;
-}
-
-export interface ProductGalleryProps {
-  images: string[];
-  productName: string;
-}
-
 // Tipos para el carrito
 export interface CartItem {
   _id: string;
@@ -156,25 +149,6 @@ export type ProductAction =
     }
   | { type: 'CLEAR_CART' };
 
-// Tipos para el contexto del producto
-export interface ProductContextType {
-  products: Product[];
-  isLoading: boolean;
-  error: string | null;
-  filters: ProductFilters;
-  sortBy: SortOption['value'];
-  setFilters: (filters: ProductFilters) => void;
-  setSortBy: (sort: SortOption['value']) => void;
-  fetchProducts: () => Promise<void>;
-}
-
-// Tipos utilitarios
-export type FlattenedProduct = Omit<Product, '_id'> & {
-  _id?: string;
-};
-
-export type ProductFormData = Omit<Product, '_id' | 'createdAt' | 'updatedAt'>;
-
 // Enums para valores constantes
 export enum ProductSize {
   Small = 'Chico',
@@ -200,7 +174,7 @@ export const SORT_OPTIONS: SortOption[] = [
 
 export const ITEMS_PER_PAGE = 12;
 
-// Funciones auxiliares
+// Funciones de utilidad
 export const calculateDiscount = (
   price: number,
   compareAtPrice?: number,
@@ -211,12 +185,6 @@ export const calculateDiscount = (
 
 export const formatProductName = (name: string): string => {
   return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-};
-
-export const generateSKU = (productName: string, size: string): string => {
-  const cleanName = productName.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-  const cleanSize = size.charAt(0).toUpperCase();
-  return `${cleanName}-${cleanSize}-${Date.now().toString(36)}`;
 };
 
 // Validadores

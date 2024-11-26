@@ -8,6 +8,97 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ShoppingBag, Trash2, ChevronLeft } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { CartItem } from '../types/product';
+
+// Definimos el componente CartItemCard para mejor organización
+const CartItemCard = ({
+  item,
+  onRemove,
+  onUpdateQuantity,
+}: {
+  item: CartItem;
+  onRemove: (id: string, size: string) => void;
+  onUpdateQuantity: (id: string, size: string, quantity: number) => void;
+}) => (
+  <motion.div
+    layout
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+    transition={{ duration: 0.2 }}
+    className="border-b border-gray-200 p-4 last:border-b-0 sm:p-6"
+  >
+    <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
+      <div className="relative aspect-square h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-gray-50">
+        <Image
+          src={item.imageSrc}
+          alt={item.name}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 96px, 96px"
+          priority
+        />
+      </div>
+
+      <div className="flex flex-1 flex-col">
+        <div className="flex items-start justify-between">
+          <div>
+            <h3 className="font-medium text-gray-900">{item.name}</h3>
+            <p className="mt-1 text-sm text-gray-500">Talla: {item.size}</p>
+          </div>
+
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => onRemove(item._id, item.size)}
+            className="ml-4 text-gray-400 transition-colors hover:text-red-500"
+            aria-label="Eliminar producto"
+          >
+            <Trash2 className="h-5 w-5" />
+          </motion.button>
+        </div>
+
+        <div className="mt-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center rounded-lg border border-gray-200">
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() =>
+                  onUpdateQuantity(
+                    item._id,
+                    item.size,
+                    Math.max(1, item.quantity - 1),
+                  )
+                }
+                className="flex h-8 w-8 items-center justify-center border-r text-gray-600 hover:bg-gray-50"
+              >
+                -
+              </motion.button>
+              <span className="flex h-8 w-12 items-center justify-center text-sm">
+                {item.quantity}
+              </span>
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() =>
+                  onUpdateQuantity(item._id, item.size, item.quantity + 1)
+                }
+                className="flex h-8 w-8 items-center justify-center border-l text-gray-600 hover:bg-gray-50"
+              >
+                +
+              </motion.button>
+            </div>
+            <div className="text-sm text-gray-500">
+              {formatCurrency(item.price)} c/u
+            </div>
+          </div>
+          <p className="text-lg font-medium text-gray-900">
+            {formatCurrency(item.price * item.quantity)}
+          </p>
+        </div>
+      </div>
+    </div>
+  </motion.div>
+);
 
 export default function CartPage() {
   const {
@@ -20,19 +111,42 @@ export default function CartPage() {
 
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
+  const handleRemoveItem = (id: string, size: string) => {
+    removeItem(id, size);
+    toast.success('Producto eliminado del carrito', {
+      id: `remove-${id}-${size}`, // ID único evita duplicados
+      position: 'bottom-right',
+      duration: 2000,
+    });
+  };
+
+  const handleUpdateQuantity = (id: string, size: string, quantity: number) => {
+    if (quantity < 1) {
+      toast.error('La cantidad debe ser al menos 1', {
+        id: `quantity-error-${id}-${size}`,
+      });
+      return;
+    }
+    updateQuantity(id, size, quantity);
+  };
+
   const handleCheckout = async () => {
     setIsCheckingOut(true);
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      toast.success('Redirigiendo al pago...');
+      toast.success('Redirigiendo al pago...', {
+        id: 'checkout-success',
+      });
+      // Aquí iría la lógica de redirección al checkout
     } catch (error) {
-      toast.error('Error al procesar el pago');
+      toast.error('Error al procesar el pago', {
+        id: 'checkout-error',
+      });
     } finally {
       setIsCheckingOut(false);
     }
   };
 
-  // Carrito vacío
   if (!items?.length) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-purple-50 to-white px-4">
@@ -64,7 +178,6 @@ export default function CartPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-white">
       <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:max-w-7xl lg:px-8">
-        {/* Encabezado */}
         <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
           <h1 className="text-2xl font-bold text-gray-900">
             Tu Carrito ({itemCount} {itemCount === 1 ? 'producto' : 'productos'}
@@ -82,116 +195,22 @@ export default function CartPage() {
           </Link>
         </div>
 
-        {/* Grid principal */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-          {/* Lista de productos */}
           <div className="lg:col-span-8">
             <div className="rounded-lg bg-white shadow-lg">
-              <AnimatePresence>
+              <AnimatePresence mode="wait">
                 {items.map((item) => (
-                  <motion.div
+                  <CartItemCard
                     key={`${item._id}-${item.size}`}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    className="border-b border-gray-200 p-4 last:border-b-0 sm:p-6"
-                  >
-                    {/* Contenedor del item */}
-                    <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
-                      {/* Imagen del producto */}
-                      <div className="relative aspect-square h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-gray-50">
-                        <Image
-                          src={item.imageSrc}
-                          alt={item.name}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 768px) 96px, 96px"
-                          priority
-                        />
-                      </div>
-
-                      {/* Detalles y controles */}
-                      <div className="flex flex-1 flex-col">
-                        <div className="flex items-start justify-between">
-                          {/* Info del producto */}
-                          <div>
-                            <h3 className="font-medium text-gray-900">
-                              {item.name}
-                            </h3>
-                            <p className="mt-1 text-sm text-gray-500">
-                              Talla: {item.size}
-                            </p>
-                          </div>
-
-                          {/* Botón eliminar */}
-                          <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            onClick={() => {
-                              removeItem(item._id, item.size);
-                              toast.success('Producto eliminado');
-                            }}
-                            className="ml-4 text-gray-400 transition-colors hover:text-red-500"
-                            aria-label="Eliminar producto"
-                          >
-                            <Trash2 className="h-5 w-5" />
-                          </motion.button>
-                        </div>
-
-                        {/* Controles de cantidad y precio */}
-                        <div className="mt-4 flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            {/* Control de cantidad */}
-                            <div className="flex items-center rounded-lg border border-gray-200">
-                              <motion.button
-                                whileTap={{ scale: 0.95 }}
-                                onClick={() =>
-                                  updateQuantity(
-                                    item._id,
-                                    item.size,
-                                    Math.max(1, item.quantity - 1),
-                                  )
-                                }
-                                className="flex h-8 w-8 items-center justify-center border-r text-gray-600 hover:bg-gray-50"
-                              >
-                                -
-                              </motion.button>
-                              <span className="flex h-8 w-12 items-center justify-center text-sm">
-                                {item.quantity}
-                              </span>
-                              <motion.button
-                                whileTap={{ scale: 0.95 }}
-                                onClick={() =>
-                                  updateQuantity(
-                                    item._id,
-                                    item.size,
-                                    item.quantity + 1,
-                                  )
-                                }
-                                className="flex h-8 w-8 items-center justify-center border-l text-gray-600 hover:bg-gray-50"
-                              >
-                                +
-                              </motion.button>
-                            </div>
-                            {/* Precio unitario */}
-                            <div className="text-sm text-gray-500">
-                              {formatCurrency(item.price)} c/u
-                            </div>
-                          </div>
-                          {/* Precio total por item */}
-                          <p className="text-lg font-medium text-gray-900">
-                            {formatCurrency(item.price * item.quantity)}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
+                    item={item}
+                    onRemove={handleRemoveItem}
+                    onUpdateQuantity={handleUpdateQuantity}
+                  />
                 ))}
               </AnimatePresence>
             </div>
           </div>
 
-          {/* Resumen del pedido */}
           <div className="lg:col-span-4">
             <div className="sticky top-8 rounded-lg bg-white p-6 shadow-lg">
               <h2 className="text-lg font-medium text-gray-900">
@@ -224,7 +243,6 @@ export default function CartPage() {
                 </div>
               </div>
 
-              {/* Botón checkout */}
               <motion.button
                 whileHover={{ scale: isCheckingOut ? 1 : 1.02 }}
                 whileTap={{ scale: isCheckingOut ? 1 : 0.98 }}
@@ -235,7 +253,6 @@ export default function CartPage() {
                 {isCheckingOut ? 'Procesando...' : 'Proceder al pago'}
               </motion.button>
 
-              {/* Métodos de pago */}
               <div className="mt-6 border-t border-gray-200 pt-6">
                 <p className="mb-2 text-sm text-gray-500">
                   Métodos de pago aceptados:

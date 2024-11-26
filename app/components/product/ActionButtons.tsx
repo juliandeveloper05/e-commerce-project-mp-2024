@@ -6,6 +6,8 @@ import { ShoppingCart, Heart, Share2 } from 'lucide-react';
 import { FaWhatsapp, FaFacebook } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import { Send } from 'lucide-react';
+import { useProductFavorites } from '@/app/hooks/useProductFavorites';
+import type { Product } from '@/app/types/product';
 
 interface ShareOption {
   name: string;
@@ -15,15 +17,14 @@ interface ShareOption {
 }
 
 interface ActionButtonsProps {
+  product: Product;
   onAddToCart: () => Promise<void>;
-  onAddToWishlist: () => void;
   showShareMenu: boolean;
   onToggleShare: () => void;
   productUrl: string;
   isLoading?: boolean;
 }
 
-// Componente del menú de compartir
 const ShareMenu: React.FC<{ productUrl: string }> = ({ productUrl }) => {
   const shareOptions: ShareOption[] = [
     {
@@ -86,7 +87,6 @@ const ShareMenu: React.FC<{ productUrl: string }> = ({ productUrl }) => {
   );
 };
 
-// Botón principal con animación
 const AnimatedButton: React.FC<{
   onClick: () => void;
   disabled?: boolean;
@@ -106,18 +106,19 @@ const AnimatedButton: React.FC<{
   );
 };
 
-// Componente principal ActionButtons
 const ActionButtons: React.FC<ActionButtonsProps> = ({
+  product,
   onAddToCart,
-  onAddToWishlist,
   showShareMenu,
   onToggleShare,
   productUrl,
   isLoading = false,
 }) => {
+  const { toggleFavorite, isProcessing, isFavorite } = useProductFavorites();
+  const isCurrentFavorite = isFavorite(product._id);
+
   return (
     <div className="mt-8 flex flex-col space-y-4">
-      {/* Botón Agregar al Carrito */}
       <AnimatedButton
         onClick={onAddToCart}
         disabled={isLoading}
@@ -127,18 +128,32 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
         <span>{isLoading ? 'Agregando...' : 'Agregar al Carrito'}</span>
       </AnimatedButton>
 
-      {/* Botones secundarios */}
       <div className="flex space-x-4">
-        {/* Botón Wishlist */}
         <AnimatedButton
-          onClick={onAddToWishlist}
-          className="flex h-14 flex-1 items-center justify-center rounded-full border-2 border-gray-300 px-6 text-base font-medium text-gray-700 transition-all hover:bg-gray-50"
+          onClick={() => toggleFavorite(product)}
+          disabled={isProcessing}
+          className={`flex h-14 flex-1 items-center justify-center rounded-full border-2 
+            ${
+              isCurrentFavorite
+                ? 'border-purple-500 bg-purple-50'
+                : 'border-gray-300'
+            } 
+            px-6 text-base font-medium transition-all hover:bg-gray-50 disabled:opacity-50`}
         >
-          <Heart className="mr-2 h-5 w-5" />
-          <span>Guardar</span>
+          <Heart
+            className={`mr-2 h-5 w-5 ${
+              isCurrentFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'
+            }`}
+          />
+          <span>
+            {isProcessing
+              ? 'Procesando...'
+              : isCurrentFavorite
+              ? 'Guardado'
+              : 'Guardar'}
+          </span>
         </AnimatedButton>
 
-        {/* Botón Compartir con Menú */}
         <div className="relative">
           <AnimatedButton
             onClick={onToggleShare}

@@ -1,19 +1,18 @@
-'use client';
-
 import React, { useState, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Product, ProductGridProps } from '../../types/product';
 import { ShoppingCart, Heart } from 'lucide-react';
+import { toast } from 'react-hot-toast';
+import { useFavorites } from '@/app/context/FavoritesContext';
 
 const InnovativeProductGrid: React.FC<ProductGridProps> = memo(
   ({ products }) => {
     const [hoveredItem, setHoveredItem] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
+    const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
 
-    // Animaciones y variantes
     const containerVariants = {
       hidden: { opacity: 0 },
       show: {
@@ -42,7 +41,6 @@ const InnovativeProductGrid: React.FC<ProductGridProps> = memo(
       },
     };
 
-    // Handlers para hover
     const handleHoverStart = useCallback((id: string) => {
       setHoveredItem(id);
     }, []);
@@ -51,11 +49,9 @@ const InnovativeProductGrid: React.FC<ProductGridProps> = memo(
       setHoveredItem(null);
     }, []);
 
-    // Handler para añadir al carrito
     const handleAddToCart = useCallback(async (productId: string) => {
       setIsLoading(true);
       try {
-        // Aquí iría la lógica para añadir al carrito
         console.log('Añadiendo al carrito:', productId);
       } catch (error) {
         console.error('Error al añadir al carrito:', error);
@@ -64,9 +60,31 @@ const InnovativeProductGrid: React.FC<ProductGridProps> = memo(
       }
     }, []);
 
+    const handleFavoriteClick = useCallback(
+      (e: React.MouseEvent, product: Product) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const isFavorite = favorites.some((fav) => fav._id === product._id);
+        console.log(
+          'Toggle favorite:',
+          product._id,
+          isFavorite ? 'removing' : 'adding',
+        );
+
+        if (isFavorite) {
+          removeFromFavorites(product._id);
+          toast.success('Eliminado de favoritos');
+        } else {
+          addToFavorites(product);
+          toast.success('Agregado a favoritos');
+        }
+      },
+      [favorites, addToFavorites, removeFromFavorites],
+    );
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-8">
-        {/* Círculos decorativos animados */}
         <motion.div
           className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
           initial={{ opacity: 0 }}
@@ -96,7 +114,6 @@ const InnovativeProductGrid: React.FC<ProductGridProps> = memo(
           ))}
         </motion.div>
 
-        {/* Título de la sección */}
         <motion.h1
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -105,7 +122,6 @@ const InnovativeProductGrid: React.FC<ProductGridProps> = memo(
           Nuestra Colección
         </motion.h1>
 
-        {/* Grid de productos */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -127,14 +143,12 @@ const InnovativeProductGrid: React.FC<ProductGridProps> = memo(
                   href={`/producto/${product.slug}`}
                   className="block"
                   onClick={(e) => {
-                    // Permitir la navegación solo si no se hizo clic en el botón de favoritos
                     if ((e.target as HTMLElement).closest('button')) {
                       e.preventDefault();
                     }
                   }}
                 >
                   <div className="relative overflow-hidden rounded-xl bg-white p-4 shadow-lg transition-all duration-300 hover:shadow-xl">
-                    {/* Efecto de máscara circular */}
                     <motion.div
                       className="absolute inset-0 z-10 bg-gradient-to-br from-purple-500/10 to-pink-500/10"
                       initial={false}
@@ -144,7 +158,6 @@ const InnovativeProductGrid: React.FC<ProductGridProps> = memo(
                       transition={{ duration: 0.3 }}
                     />
 
-                    {/* Imagen del producto */}
                     <div className="relative aspect-square overflow-hidden rounded-lg">
                       <Image
                         src={product.imageSrc}
@@ -155,23 +168,15 @@ const InnovativeProductGrid: React.FC<ProductGridProps> = memo(
                         priority
                       />
 
-                      {/* Botón de favoritos */}
                       <motion.button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setFavorites((prev) => ({
-                            ...prev,
-                            [product._id]: !prev[product._id],
-                          }));
-                        }}
+                        onClick={(e) => handleFavoriteClick(e, product)}
                         className="absolute right-2 top-2 z-20 rounded-full bg-white/90 p-2 shadow-lg transition-all hover:bg-white"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                       >
                         <Heart
                           className={`h-5 w-5 transition-all duration-300 ${
-                            favorites[product._id]
+                            favorites.some((fav) => fav._id === product._id)
                               ? 'fill-red-500 text-red-500'
                               : 'text-gray-600 hover:text-red-500'
                           }`}
@@ -179,7 +184,6 @@ const InnovativeProductGrid: React.FC<ProductGridProps> = memo(
                       </motion.button>
                     </div>
 
-                    {/* Información del producto */}
                     <motion.div
                       className="mt-4 space-y-2"
                       initial={{ opacity: 0, y: 20 }}
@@ -214,7 +218,6 @@ const InnovativeProductGrid: React.FC<ProductGridProps> = memo(
           </AnimatePresence>
         </motion.div>
 
-        {/* Mensaje si no hay productos */}
         {products.length === 0 && (
           <motion.div
             initial={{ opacity: 0 }}

@@ -1,25 +1,23 @@
+'use client';
+
 import { useState } from 'react';
+import { useFavorites } from '@/app/context/FavoritesContext';
 import { toast } from 'react-hot-toast';
+import type { Product } from '@/app/types/product';
 
 interface WishlistItem {
   productId: string;
+  product: Product; // Add this
 }
 
 export const useWishlist = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const { addToFavorites } = useFavorites();
 
   const addToWishlist = async (item: WishlistItem) => {
     setIsLoading(true);
     try {
-      // Aquí iría la lógica real de agregar a favoritos
-      // const response = await fetch('/api/wishlist', {
-      //   method: 'POST',
-      //   body: JSON.stringify(item)
-      // });
-
-      // Simular delay
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
+      await addToFavorites(item.product); // Pass the full product object
       toast.success('Producto agregado a favoritos');
       return true;
     } catch (error) {

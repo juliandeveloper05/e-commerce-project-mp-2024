@@ -1,15 +1,26 @@
+// components/navbar/Navbar.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaInstagram, FaFacebook } from 'react-icons/fa';
-import { ShoppingBag, Home, Info, Phone, Book, User } from 'lucide-react';
+import {
+  ShoppingBag,
+  Home,
+  Info,
+  Phone,
+  Book,
+  User,
+  Heart,
+} from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import HamburgerIconAnotherVersion from './HamburgerIconAnotherVersion';
 import { useSession } from 'next-auth/react';
+import NavLink from './NavLink';
 import CartButton from '../CartButton';
+import HamburgerIconAnotherVersion from './HamburgerIconAnotherVersion';
+import { useFavorites } from '@/app/context/FavoritesContext';
 
 interface MenuItem {
   title: string;
@@ -17,16 +28,16 @@ interface MenuItem {
   href: string;
 }
 
-const Navbar: React.FC = () => {
+const Navbar = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const { data: session } = useSession();
+  const { favorites } = useFavorites();
 
   const menuItems = [
     { title: 'INICIO', icon: Home, href: '/' },
     { title: 'TODOS LOS PRODUCTOS', icon: ShoppingBag, href: '/productos' },
-    { title: 'SOBRE MP', icon: Info, href: '/sobre-mp' },
     { title: 'CONTACTO', icon: Phone, href: '/contacto' },
   ];
 
@@ -63,6 +74,7 @@ const Navbar: React.FC = () => {
       >
         <div className="mx-auto max-w-7xl">
           <div className="flex items-center justify-between px-4 py-2">
+            {/* Logo */}
             <Link href="/">
               <motion.div
                 whileHover={{ scale: 1.1 }}
@@ -80,33 +92,41 @@ const Navbar: React.FC = () => {
               </motion.div>
             </Link>
 
+            {/* Desktop Navigation */}
             <div className="hidden lg:flex lg:items-center lg:gap-8">
               <ul className="flex items-center space-x-8">
                 {menuItems.map((item) => (
                   <li key={item.title}>
-                    <Link href={item.href}>
-                      <div
-                        className={`relative cursor-pointer text-sm font-medium transition-colors
-                          ${
-                            isActiveLink(item.href)
-                              ? 'text-purple-600'
-                              : 'text-gray-700 hover:text-purple-600'
-                          }`}
-                      >
-                        {item.title}
-                        {isActiveLink(item.href) && (
-                          <motion.div
-                            className="absolute -bottom-1 left-0 h-0.5 w-full bg-purple-600"
-                            layoutId="navbar-underline"
-                          />
-                        )}
-                      </div>
-                    </Link>
+                    <NavLink
+                      href={item.href}
+                      title={item.title}
+                      isActive={isActiveLink(item.href)}
+                    />
                   </li>
                 ))}
               </ul>
 
+              {/* User, Favorites and Cart Buttons */}
               <div className="flex items-center gap-4">
+                <Link href="/favoritos">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="relative flex items-center gap-2 rounded-full bg-white/90 px-4 py-3 text-purple-600 shadow-sm transition-all hover:bg-purple-50"
+                  >
+                    <Heart className="h-5 w-5" />
+                    {favorites.length > 0 && (
+                      <motion.span
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white"
+                      >
+                        {favorites.length}
+                      </motion.span>
+                    )}
+                  </motion.div>
+                </Link>
+
                 <Link href="/login">
                   <motion.div
                     whileHover={{ scale: 1.05 }}
@@ -133,6 +153,7 @@ const Navbar: React.FC = () => {
               </div>
             </div>
 
+            {/* Mobile Menu Button */}
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={toggleMenu}
@@ -148,6 +169,7 @@ const Navbar: React.FC = () => {
         </div>
       </motion.nav>
 
+      {/* Mobile Menu */}
       <AnimatePresence>
         {showMenu && (
           <motion.div
@@ -158,7 +180,28 @@ const Navbar: React.FC = () => {
             className="fixed bottom-0 left-0 right-0 top-0 z-40 bg-white pt-20 lg:hidden"
           >
             <div className="flex h-full flex-col px-6 py-8">
+              {/* Mobile User, Favorites and Cart */}
               <div className="mb-8 flex justify-center gap-4">
+                <Link href="/favoritos">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="relative flex items-center gap-2 rounded-full bg-white/90 px-4 py-3 text-purple-600 shadow-sm transition-all hover:bg-purple-50"
+                    onClick={toggleMenu}
+                  >
+                    <Heart className="h-5 w-5" />
+                    {favorites.length > 0 && (
+                      <motion.span
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white"
+                      >
+                        {favorites.length}
+                      </motion.span>
+                    )}
+                  </motion.div>
+                </Link>
+
                 <Link href="/login">
                   <motion.div
                     whileHover={{ scale: 1.05 }}
@@ -185,6 +228,7 @@ const Navbar: React.FC = () => {
                 </Link>
               </div>
 
+              {/* Mobile Menu Items */}
               <div className="flex flex-1 flex-col space-y-4">
                 {menuItems.map((item, index) => {
                   const Icon = item.icon;
@@ -222,6 +266,7 @@ const Navbar: React.FC = () => {
                 })}
               </div>
 
+              {/* Social Media Links */}
               <div className="mt-auto">
                 <div className="mb-6 h-px bg-gray-200" />
                 <div className="text-center">

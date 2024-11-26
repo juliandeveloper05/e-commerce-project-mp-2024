@@ -1,114 +1,109 @@
 'use client';
 
-import React, { useState, useEffect, ChangeEvent } from 'react';
-import { useSession } from 'next-auth/react';
-import Image from 'next/image';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { FaUser, FaEnvelope, FaEdit, FaArrowLeft } from 'react-icons/fa';
+import Image from 'next/image';
+import Link from 'next/link';
+import { LogOut, Home, Heart } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const Account = () => {
-  const { data: session, status } = useSession();
   const router = useRouter();
-  const [name, setName] = useState('');
-  const [isEditing, setIsEditing] = useState(false);
+  const { data: session } = useSession();
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login');
-    } else if (session?.user) {
-      setName(session.user.name || '');
-    }
-  }, [session, status, router]);
-
-  const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
-  };
-
-  const handleNameSubmit = async () => {
+  const handleLogout = async () => {
     try {
-      const response = await fetch('/api/user/update-user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name }),
+      setIsLoading(true);
+      const result = await signOut({
+        redirect: false,
+        callbackUrl: '/',
       });
-      if (response.ok) {
-        setIsEditing(false);
-        // Aquí podrías actualizar la sesión si es necesario
-      } else {
-        console.error('Failed to update name');
-      }
+
+      toast.success('Sesión cerrada exitosamente');
+      router.push('/');
     } catch (error) {
-      console.error('Error updating name:', error);
+      console.error('Error al cerrar sesión:', error);
+      toast.error('Error al cerrar sesión');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-[calc(140vh-25rem)] w-full items-center justify-center bg-gray-100 p-4">
-      <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg">
-        <h2 className="mb-6 text-center text-2xl font-bold text-gray-900">
-          Mi Cuenta
-        </h2>
-        <div className="mb-6 flex flex-col items-center">
-          <div className="relative">
-            <Image
-              src={session?.user?.image || '/default-avatar.png'}
-              alt="Profile"
-              width={100}
-              height={100}
-              className="rounded-full border-2 border-white object-cover shadow-lg"
-            />
-          </div>
-        </div>
-        <div className="mb-4 space-y-4">
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
-              <FaUser className="mr-2 inline" />
-              Nombre
-            </label>
-            <div className="flex items-center">
-              <input
-                type="text"
-                value={name}
-                onChange={handleNameChange}
-                disabled={!isEditing}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-300 focus:outline-none focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-              />
-              <button
-                onClick={() => setIsEditing(!isEditing)}
-                className="ml-2 text-blue-600 hover:text-blue-800"
-              >
-                <FaEdit size={16} />
-              </button>
-            </div>
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
-              <FaEnvelope className="mr-2 inline" />
-              Email
-            </label>
-            <input
-              type="email"
-              value={session?.user?.email || ''}
-              disabled
-              className="w-full rounded-md border border-gray-300 bg-gray-50 px-3 py-2 text-gray-500 shadow-sm"
-            />
-          </div>
-        </div>
-        {isEditing && (
-          <button
-            onClick={handleNameSubmit}
-            className="mb-4 w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-4 sm:p-6 lg:p-8">
+      <div className="mx-auto max-w-3xl">
+        <Link href="/">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="mb-8 flex items-center gap-2 text-gray-600 hover:text-purple-600"
           >
-            Guardar
-          </button>
-        )}
-        <button
-          onClick={() => router.push('/')}
-          className="flex w-full items-center justify-center rounded-md bg-gray-600 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-        >
-          <FaArrowLeft className="mr-2" />
-          Volver a la tienda
-        </button>
+            <Home className="h-5 w-5" />
+            Volver a la tienda
+          </motion.button>
+        </Link>
+
+        <div className="rounded-2xl bg-white p-6 shadow-xl">
+          <div className="text-center">
+            <div className="relative mx-auto mb-4 h-24 w-24 overflow-hidden rounded-full border-4 border-purple-100">
+              <Image
+                src={session?.user?.image || '/default-avatar.png'}
+                alt="Profile"
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+            <h1 className="mb-2 text-2xl font-bold text-gray-900">
+              {session?.user?.name}
+            </h1>
+            <p className="text-gray-500">{session?.user?.email}</p>
+          </div>
+
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleLogout}
+              disabled={isLoading}
+              className="flex items-center justify-center gap-2 rounded-full bg-purple-600 px-6 py-3 text-white transition-all hover:bg-purple-700 disabled:opacity-50"
+            >
+              <LogOut className="h-5 w-5" />
+              {isLoading ? 'Cerrando sesión...' : 'Cerrar Sesión'}
+            </motion.button>
+
+            <Link href="/favoritos">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-purple-200 px-6 py-3 text-purple-600 transition-all hover:bg-purple-50"
+              >
+                <Heart className="h-5 w-5" />
+                Mis Favoritos
+              </motion.button>
+            </Link>
+          </div>
+
+          <div className="mt-8 rounded-lg bg-gray-50 p-4">
+            <h3 className="mb-2 font-medium text-gray-700">
+              ¿Necesitas ayuda?
+            </h3>
+            <p className="text-sm text-gray-500">
+              Contáctanos a través de{' '}
+              <a
+                href="https://wa.me/5491126625292"
+                className="font-medium text-purple-600 hover:text-purple-500"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                WhatsApp
+              </a>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

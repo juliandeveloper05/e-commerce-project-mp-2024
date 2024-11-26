@@ -7,7 +7,7 @@ export default async function AccountPage() {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    redirect('/api/auth/signin');
+    return redirect('/login');
   }
 
   return <Account />;

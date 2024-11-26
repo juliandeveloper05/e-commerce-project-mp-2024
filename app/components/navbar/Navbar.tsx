@@ -1,21 +1,12 @@
-// components/navbar/Navbar.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaInstagram, FaFacebook } from 'react-icons/fa';
-import {
-  ShoppingBag,
-  Home,
-  Info,
-  Phone,
-  Book,
-  User,
-  Heart,
-} from 'lucide-react';
+import { ShoppingBag, Home, Info, Phone, User, Heart } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import NavLink from './NavLink';
 import CartButton from '../CartButton';
@@ -34,6 +25,7 @@ const Navbar = () => {
   const pathname = usePathname();
   const { data: session } = useSession();
   const { favorites } = useFavorites();
+  const router = useRouter();
 
   const menuItems = [
     { title: 'INICIO', icon: Home, href: '/' },
@@ -60,6 +52,14 @@ const Navbar = () => {
       return pathname === '/';
     }
     return pathname.startsWith(href);
+  };
+
+  const handleUserClick = () => {
+    const route = session ? '/account' : '/login';
+    router.push(route);
+    if (showMenu) {
+      toggleMenu();
+    }
   };
 
   return (
@@ -127,25 +127,24 @@ const Navbar = () => {
                   </motion.div>
                 </Link>
 
-                <Link href="/login">
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex items-center gap-2 rounded-full bg-white/90 px-4 py-3 text-purple-600 shadow-sm transition-all hover:bg-purple-50"
-                  >
-                    {session ? (
-                      <Image
-                        src={session.user?.image || '/default-avatar.png'}
-                        alt="Profile"
-                        width={20}
-                        height={20}
-                        className="rounded-full"
-                      />
-                    ) : (
-                      <User className="h-5 w-5" />
-                    )}
-                  </motion.div>
-                </Link>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleUserClick}
+                  className="flex cursor-pointer items-center gap-2 rounded-full bg-white/90 px-4 py-3 text-purple-600 shadow-sm transition-all hover:bg-purple-50"
+                >
+                  {session ? (
+                    <Image
+                      src={session.user?.image || '/default-avatar.png'}
+                      alt="Profile"
+                      width={20}
+                      height={20}
+                      className="rounded-full"
+                    />
+                  ) : (
+                    <User className="h-5 w-5" />
+                  )}
+                </motion.div>
 
                 <Link href="/cart">
                   <CartButton />
@@ -202,26 +201,24 @@ const Navbar = () => {
                   </motion.div>
                 </Link>
 
-                <Link href="/login">
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex items-center gap-2 rounded-full bg-white/90 px-4 py-3 text-purple-600 shadow-sm transition-all hover:bg-purple-50"
-                    onClick={toggleMenu}
-                  >
-                    {session ? (
-                      <Image
-                        src={session.user?.image || '/default-avatar.png'}
-                        alt="Profile"
-                        width={20}
-                        height={20}
-                        className="rounded-full"
-                      />
-                    ) : (
-                      <User className="h-5 w-5" />
-                    )}
-                  </motion.div>
-                </Link>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleUserClick}
+                  className="flex cursor-pointer items-center gap-2 rounded-full bg-white/90 px-4 py-3 text-purple-600 shadow-sm transition-all hover:bg-purple-50"
+                >
+                  {session ? (
+                    <Image
+                      src={session.user?.image || '/default-avatar.png'}
+                      alt="Profile"
+                      width={20}
+                      height={20}
+                      className="rounded-full"
+                    />
+                  ) : (
+                    <User className="h-5 w-5" />
+                  )}
+                </motion.div>
 
                 <Link href="/cart" onClick={toggleMenu}>
                   <CartButton />

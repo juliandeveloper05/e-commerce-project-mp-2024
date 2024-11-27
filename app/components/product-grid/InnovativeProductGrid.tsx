@@ -6,11 +6,16 @@ import { Product, ProductGridProps } from '../../types/product';
 import { ShoppingCart, Heart } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useFavorites } from '@/app/context/FavoritesContext';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import FavoriteButton from '../../components/favoritos/FavoriteButton';
 
 const InnovativeProductGrid: React.FC<ProductGridProps> = memo(
   ({ products }) => {
     const [hoveredItem, setHoveredItem] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const { data: session } = useSession();
+    const router = useRouter();
     const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
 
     const containerVariants = {
@@ -49,28 +54,76 @@ const InnovativeProductGrid: React.FC<ProductGridProps> = memo(
       setHoveredItem(null);
     }, []);
 
-    const handleAddToCart = useCallback(async (productId: string) => {
-      setIsLoading(true);
-      try {
-        console.log('Añadiendo al carrito:', productId);
-      } catch (error) {
-        console.error('Error al añadir al carrito:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }, []);
+    const handleAddToCart = useCallback(
+      async (productId: string) => {
+        if (!session) {
+          toast(
+            (t) => (
+              <div className="flex items-center gap-3">
+                <span>Debes iniciar sesión para comprar</span>
+                <button
+                  onClick={() => {
+                    toast.dismiss(t.id);
+                    router.push('/login');
+                  }}
+                  className="rounded-lg bg-purple-600 px-3 py-1 text-sm text-white hover:bg-purple-700"
+                >
+                  Iniciar sesión
+                </button>
+              </div>
+            ),
+            {
+              duration: 4000,
+              position: 'bottom-right',
+            },
+          );
+          return;
+        }
+
+        setIsLoading(true);
+        try {
+          // Aquí iría la lógica para agregar al carrito
+          toast.success('Producto agregado al carrito');
+        } catch (error) {
+          console.error('Error al añadir al carrito:', error);
+          toast.error('Error al agregar al carrito');
+        } finally {
+          setIsLoading(false);
+        }
+      },
+      [session, router],
+    );
 
     const handleFavoriteClick = useCallback(
       (e: React.MouseEvent, product: Product) => {
         e.preventDefault();
         e.stopPropagation();
 
+        if (!session) {
+          toast(
+            (t) => (
+              <div className="flex items-center gap-3">
+                <span>Debes iniciar sesión para guardar favoritos</span>
+                <button
+                  onClick={() => {
+                    toast.dismiss(t.id);
+                    router.push('/login');
+                  }}
+                  className="rounded-lg bg-purple-600 px-3 py-1 text-sm text-white hover:bg-purple-700"
+                >
+                  Iniciar sesión
+                </button>
+              </div>
+            ),
+            {
+              duration: 4000,
+              position: 'bottom-right',
+            },
+          );
+          return;
+        }
+
         const isFavorite = favorites.some((fav) => fav._id === product._id);
-        console.log(
-          'Toggle favorite:',
-          product._id,
-          isFavorite ? 'removing' : 'adding',
-        );
 
         if (isFavorite) {
           removeFromFavorites(product._id);
@@ -80,8 +133,12 @@ const InnovativeProductGrid: React.FC<ProductGridProps> = memo(
           toast.success('Agregado a favoritos');
         }
       },
-      [favorites, addToFavorites, removeFromFavorites],
+      [session, favorites, addToFavorites, removeFromFavorites, router],
     );
+
+    function handleToggleFavorite(product: Product) {
+      throw new Error('Function not implemented.');
+    }
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-8">
@@ -167,21 +224,6 @@ const InnovativeProductGrid: React.FC<ProductGridProps> = memo(
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         priority
                       />
-
-                      <motion.button
-                        onClick={(e) => handleFavoriteClick(e, product)}
-                        className="absolute right-2 top-2 z-20 rounded-full bg-white/90 p-2 shadow-lg transition-all hover:bg-white"
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                      >
-                        <Heart
-                          className={`h-5 w-5 transition-all duration-300 ${
-                            favorites.some((fav) => fav._id === product._id)
-                              ? 'fill-red-500 text-red-500'
-                              : 'text-gray-600 hover:text-red-500'
-                          }`}
-                        />
-                      </motion.button>
                     </div>
 
                     <motion.div
@@ -202,10 +244,16 @@ const InnovativeProductGrid: React.FC<ProductGridProps> = memo(
                             e.preventDefault();
                             handleAddToCart(product._id);
                           }}
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
+                          whileHover={session ? { scale: 1.1 } : {}}
+                          whileTap={session ? { scale: 0.9 } : {}}
                           disabled={isLoading}
-                          className="rounded-full bg-purple-600 p-2 text-white shadow-lg transition-colors hover:bg-purple-700 disabled:opacity-50"
+                          className={`rounded-full bg-purple-600 p-2 text-white shadow-lg transition-colors
+                            ${
+                              session
+                                ? 'hover:bg-purple-700'
+                                : 'cursor-not-allowed opacity-60'
+                            } 
+                            disabled:opacity-50`}
                         >
                           <ShoppingCart className="h-6 w-6" />
                         </motion.button>

@@ -2,12 +2,13 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, Heart, Share2 } from 'lucide-react';
+import { Heart, ShoppingCart, Share2 } from 'lucide-react';
 import { FaWhatsapp, FaFacebook } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import { Send } from 'lucide-react';
-import { useProductFavorites } from '@/app/hooks/useProductFavorites';
+import { useAuthRequiredAction } from '@/app/hooks/useAuthRequiredAction';
 import type { Product } from '@/app/types/product';
+import { toast } from 'react-hot-toast';
 
 interface ShareOption {
   name: string;
@@ -19,10 +20,13 @@ interface ShareOption {
 interface ActionButtonsProps {
   product: Product;
   onAddToCart: () => Promise<void>;
-  showShareMenu: boolean;
-  onToggleShare: () => void;
+  onAddToFavorite: () => Promise<void>;
+  isFavorite: boolean;
+  isLoading: boolean;
+  selectedSize: string;
+  showShareMenu?: boolean;
+  onToggleShare?: () => void;
   productUrl: string;
-  isLoading?: boolean;
 }
 
 const ShareMenu: React.FC<{ productUrl: string }> = ({ productUrl }) => {
@@ -87,81 +91,107 @@ const ShareMenu: React.FC<{ productUrl: string }> = ({ productUrl }) => {
   );
 };
 
-const AnimatedButton: React.FC<{
-  onClick: () => void;
-  disabled?: boolean;
-  className?: string;
-  children: React.ReactNode;
-}> = ({ onClick, disabled, className, children }) => {
-  return (
-    <motion.button
-      whileHover={{ scale: disabled ? 1 : 1.02 }}
-      whileTap={{ scale: disabled ? 1 : 0.98 }}
-      onClick={onClick}
-      disabled={disabled}
-      className={className}
-    >
-      {children}
-    </motion.button>
-  );
-};
-
-const ActionButtons: React.FC<ActionButtonsProps> = ({
+const ActionButtons = ({
   product,
   onAddToCart,
-  showShareMenu,
-  onToggleShare,
+  onAddToFavorite,
+  isFavorite,
+  isLoading,
+  selectedSize,
+  showShareMenu = false,
+  onToggleShare = () => {},
   productUrl,
-  isLoading = false,
-}) => {
-  const { toggleFavorite, isProcessing, isFavorite } = useProductFavorites();
-  const isCurrentFavorite = isFavorite(product._id);
+}: ActionButtonsProps) => {
+  const { isAuthenticated, handleAuthRequired } = useAuthRequiredAction();
+
+  const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      handleAuthRequired('agregar productos al carrito');
+      return;
+    }
+
+    if (!selectedSize) {
+      toast.error('Por favor selecciona una talla');
+      return;
+    }
+
+    onAddToCart();
+  };
+
+  const handleFavorite = () => {
+    if (!isAuthenticated) {
+      handleAuthRequired('guardar productos en favoritos');
+      return;
+    }
+
+    onAddToFavorite();
+  };
 
   return (
     <div className="mt-8 flex flex-col space-y-4">
-      <AnimatedButton
-        onClick={onAddToCart}
-        disabled={isLoading}
-        className="flex h-14 items-center justify-center rounded-full bg-purple-600 px-6 text-base font-medium text-white shadow-lg transition-all hover:bg-purple-700 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
+      <motion.button
+        whileHover={{ scale: isAuthenticated && selectedSize ? 1.02 : 1 }}
+        whileTap={{ scale: isAuthenticated && selectedSize ? 0.98 : 1 }}
+        onClick={handleAddToCart}
+        disabled={!isAuthenticated || !selectedSize || isLoading}
+        className={`flex h-14 items-center justify-center rounded-full px-6 text-base font-medium text-white shadow-lg transition-all
+          ${
+            !isAuthenticated || !selectedSize
+              ? 'cursor-not-allowed bg-gray-400'
+              : 'bg-purple-600 hover:bg-purple-700'
+          }`}
       >
         <ShoppingCart className="mr-2 h-5 w-5" />
-        <span>{isLoading ? 'Agregando...' : 'Agregar al Carrito'}</span>
-      </AnimatedButton>
+        {!isAuthenticated
+          ? 'Debes iniciar sesión'
+          : isLoading
+          ? 'Agregando...'
+          : !selectedSize
+          ? 'Selecciona una talla'
+          : 'Agregar al Carrito'}
+      </motion.button>
 
       <div className="flex space-x-4">
-        <AnimatedButton
-          onClick={() => toggleFavorite(product)}
-          disabled={isProcessing}
-          className={`flex h-14 flex-1 items-center justify-center rounded-full border-2 
+        <motion.button
+          whileHover={{ scale: isAuthenticated ? 1.02 : 1 }}
+          whileTap={{ scale: isAuthenticated ? 0.98 : 1 }}
+          onClick={handleFavorite}
+          disabled={!isAuthenticated}
+          className={`flex h-14 flex-1 items-center justify-center rounded-full border-2
             ${
-              isCurrentFavorite
+              !isAuthenticated
+                ? 'cursor-not-allowed border-gray-300 opacity-60'
+                : isFavorite
                 ? 'border-purple-500 bg-purple-50'
-                : 'border-gray-300'
-            } 
-            px-6 text-base font-medium transition-all hover:bg-gray-50 disabled:opacity-50`}
+                : 'border-gray-300 hover:bg-gray-50'
+            }`}
         >
           <Heart
             className={`mr-2 h-5 w-5 ${
-              isCurrentFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'
+              !isAuthenticated
+                ? 'text-gray-400'
+                : isFavorite
+                ? 'fill-red-500 text-red-500'
+                : 'text-gray-600'
             }`}
           />
-          <span>
-            {isProcessing
-              ? 'Procesando...'
-              : isCurrentFavorite
-              ? 'Guardado'
-              : 'Guardar'}
-          </span>
-        </AnimatedButton>
+          {!isAuthenticated
+            ? 'Debes iniciar sesión'
+            : isFavorite
+            ? 'Guardado'
+            : 'Guardar'}
+        </motion.button>
 
         <div className="relative">
-          <AnimatedButton
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={onToggleShare}
             className="flex h-14 items-center justify-center rounded-full border-2 border-gray-300 px-6 text-base font-medium text-gray-700 transition-all hover:bg-gray-50"
           >
             <Share2 className="mr-2 h-5 w-5" />
-            <span>Compartir</span>
-          </AnimatedButton>
+            Compartir
+          </motion.button>
 
           <AnimatePresence>
             {showShareMenu && <ShareMenu productUrl={productUrl} />}

@@ -34,7 +34,8 @@
     "scripts/seed.js",
     "app/ui/Right.js",
     "app/page.jsx",
-    "types/globals.d.ts"
+    "types/globals.d.ts",
+    "app/hooks/useAuthRequiredAction.jsx"
   ],
   "exclude": ["node_modules"]
 }

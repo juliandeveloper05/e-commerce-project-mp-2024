@@ -6,7 +6,14 @@ import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { LogOut, Home, Heart } from 'lucide-react';
+import {
+  LogOut,
+  Home,
+  Heart,
+  MessageCircle,
+  Wrench,
+  HelpCircle,
+} from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 const Account = () => {
@@ -17,7 +24,7 @@ const Account = () => {
   const handleLogout = async () => {
     try {
       setIsLoading(true);
-      const result = await signOut({
+      await signOut({
         redirect: false,
         callbackUrl: '/',
       });
@@ -31,6 +38,9 @@ const Account = () => {
       setIsLoading(false);
     }
   };
+
+  const CUSTOMER_SERVICE_WHATSAPP = '5491126625292'; // Store owner's number
+  const TECHNICAL_SUPPORT_WHATSAPP = '5491130666369'; // Developer's number
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-4 sm:p-6 lg:p-8">
@@ -47,6 +57,7 @@ const Account = () => {
         </Link>
 
         <div className="rounded-2xl bg-white p-6 shadow-xl">
+          {/* Profile Section */}
           <div className="text-center">
             <div className="relative mx-auto mb-4 h-24 w-24 overflow-hidden rounded-full border-4 border-purple-100">
               <Image
@@ -63,6 +74,7 @@ const Account = () => {
             <p className="text-gray-500">{session?.user?.email}</p>
           </div>
 
+          {/* Action Buttons */}
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
             <motion.button
               whileHover={{ scale: 1.02 }}
@@ -87,21 +99,41 @@ const Account = () => {
             </Link>
           </div>
 
-          <div className="mt-8 rounded-lg bg-gray-50 p-4">
-            <h3 className="mb-2 font-medium text-gray-700">
-              ¿Necesitas ayuda?
-            </h3>
-            <p className="text-sm text-gray-500">
-              Contáctanos a través de{' '}
+          {/* Support Section */}
+          <div className="mt-8 space-y-4 rounded-lg bg-gray-50 p-4">
+            <h3 className="font-medium text-gray-700">¿Necesitas ayuda?</h3>
+
+            <div className="space-y-4">
+              {/* Customer Service */}
               <a
-                href="https://wa.me/5491126625292"
-                className="font-medium text-purple-600 hover:text-purple-500"
+                href={`https://wa.me/${CUSTOMER_SERVICE_WHATSAPP}?text=Hola%20Maria%20Pancha%2C%20necesito%20ayuda%20con%20mi%20pedido`}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="flex items-center gap-2 text-sm text-gray-600 hover:text-purple-600"
               >
-                WhatsApp
+                <MessageCircle className="h-4 w-4" />
+                <span>
+                  Atención al Cliente (Consultas sobre productos y pedidos)
+                </span>
               </a>
-            </p>
+
+              {/* Technical Support */}
+              <a
+                href={`https://wa.me/${TECHNICAL_SUPPORT_WHATSAPP}?text=Hola%2C%20estoy%20teniendo%20problemas%20técnicos%20con%20la%20web`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-sm text-gray-600 hover:text-purple-600"
+              >
+                <Wrench className="h-4 w-4" />
+                <span>Soporte Técnico (Problemas con el sitio web)</span>
+              </a>
+
+              {/* Help Center - For future implementation */}
+              <div className="flex items-center gap-2 text-sm text-gray-400">
+                <HelpCircle className="h-4 w-4" />
+                <span>Centro de Ayuda (Próximamente)</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -1,4 +1,3 @@
-// model/Product.ts
 import mongoose from 'mongoose';
 
 const sizeSchema = new mongoose.Schema(

@@ -8,9 +8,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ShoppingBag, Trash2, ChevronLeft } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import { CartItem } from '../types/product';
+import { useRouter } from 'next/navigation';
+import type { CartItem } from '../types/product';
 
-// Definimos el componente CartItemCard para mejor organización
 const CartItemCard = ({
   item,
   onRemove,
@@ -101,6 +101,7 @@ const CartItemCard = ({
 );
 
 export default function CartPage() {
+  const router = useRouter();
   const {
     items = [],
     itemCount = 0,
@@ -114,7 +115,7 @@ export default function CartPage() {
   const handleRemoveItem = (id: string, size: string) => {
     removeItem(id, size);
     toast.success('Producto eliminado del carrito', {
-      id: `remove-${id}-${size}`, // ID único evita duplicados
+      id: `remove-${id}-${size}`,
       position: 'bottom-right',
       duration: 2000,
     });
@@ -133,12 +134,19 @@ export default function CartPage() {
   const handleCheckout = async () => {
     setIsCheckingOut(true);
     try {
+      toast.loading('Iniciando proceso de pago...', {
+        id: 'checkout-process',
+      });
+
       await new Promise((resolve) => setTimeout(resolve, 1000));
+
       toast.success('Redirigiendo al pago...', {
         id: 'checkout-success',
       });
-      // Aquí iría la lógica de redirección al checkout
+
+      router.push('/payment');
     } catch (error) {
+      console.error('Checkout error:', error);
       toast.error('Error al procesar el pago', {
         id: 'checkout-error',
       });

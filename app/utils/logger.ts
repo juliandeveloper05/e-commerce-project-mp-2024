@@ -1,94 +1,167 @@
 // app/utils/logger.ts
 
-interface LoggerOptions {
-  timestamp?: boolean;
-  level?: 'debug' | 'info' | 'success' | 'warn' | 'error';
+type LogLevel = 'debug' | 'info' | 'success' | 'warn' | 'error';
+
+interface LogMessage {
+  message: string;
+  data?: unknown;
+  error?: Error | unknown;
+  timestamp?: string;
 }
 
-export const logger = {
-  info: (message: string, data?: any) => {
-    console.log('\x1b[34m%s\x1b[0m', '📘 INFO:', message);
-    if (data) console.log(JSON.stringify(data, null, 2));
-  },
+interface LoggerConfig {
+  enableConsole?: boolean;
+  enableFileLogging?: boolean;
+  logLevel?: LogLevel;
+  sanitizeFields?: string[];
+}
 
-  success: (message: string, data?: any) => {
-    console.log('\x1b[32m%s\x1b[0m', '✅ SUCCESS:', message);
-    if (data) console.log(JSON.stringify(data, null, 2));
-  },
+class Logger {
+  private config: LoggerConfig;
+  private readonly defaultSanitizedFields = [
+    'password',
+    'token',
+    'secret',
+    'credit_card',
+    'cvv',
+    'key',
+  ];
 
-  error: (message: string, error: any) => {
-    console.error('\x1b[31m%s\x1b[0m', '❌ ERROR:', message);
-    if (error instanceof Error) {
-      console.error('Error details:', {
-        name: error.name,
-        message: error.message,
-        stack: error.stack,
-        ...(error as any),
-      });
-    } else {
-      console.error(error);
+  constructor(config: LoggerConfig = {}) {
+    this.config = {
+      enableConsole: true,
+      enableFileLogging: process.env.NODE_ENV === 'production',
+      logLevel: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
+      sanitizeFields: this.defaultSanitizedFields,
+      ...config,
+    };
+  }
+
+  private formatMessage({
+    message,
+    data,
+    error,
+    timestamp = new Date().toISOString(),
+  }: LogMessage): string {
+    const baseMessage = `[${timestamp}] ${message}`;
+    const details = [];
+
+    if (data) {
+      details.push(
+        `\nData: ${JSON.stringify(this.sanitizeData(data), null, 2)}`,
+      );
     }
-  },
 
-  payment: {
-    started: (orderId: string, amount: number) => {
-      logger.info('Payment process started', {
-        orderId,
-        amount,
-        timestamp: new Date().toISOString(),
-      });
-    },
+    if (error) {
+      if (error instanceof Error) {
+        details.push(`\nError: ${error.message}\nStack: ${error.stack}`);
+      } else {
+        details.push(`\nError: ${JSON.stringify(error)}`);
+      }
+    }
 
-    success: (orderId: string, transactionId: string, data?: any) => {
-      logger.success('Payment successful', {
-        orderId,
-        transactionId,
-        timestamp: new Date().toISOString(),
-        ...data,
-      });
-    },
+    return `${baseMessage}${details.join('')}`;
+  }
 
-    failed: (orderId: string, error: any) => {
-      logger.error(`Payment failed for order ${orderId}`, error);
-    },
-
-    webhook: (event: string, data: any) => {
-      logger.info(`Payment webhook received: ${event}`, {
-        event,
-        data: logger.sanitizeData(data),
-        timestamp: new Date().toISOString(),
-      });
-    },
-  },
-
-  sanitizeData: (data: any): any => {
-    const sensitiveFields = ['password', 'token', 'secret', 'credit_card'];
-
-    if (typeof data !== 'object' || data === null) {
+  private sanitizeData(data: unknown): unknown {
+    if (!data || typeof data !== 'object') {
       return data;
     }
 
-    return Object.entries(data).reduce(
-      (acc: any, [key, value]) => {
-        if (
-          sensitiveFields.some((field) => key.toLowerCase().includes(field))
-        ) {
-          acc[key] = '[REDACTED]';
-        } else if (typeof value === 'object' && value !== null) {
-          acc[key] = logger.sanitizeData(value);
-        } else {
-          acc[key] = value;
-        }
-        return acc;
-      },
-      Array.isArray(data) ? [] : {},
-    );
-  },
-};
+    const sanitizedData = { ...(data as object) };
+    const fieldsToSanitize = new Set([
+      ...this.defaultSanitizedFields,
+      ...(this.config.sanitizeFields || []),
+    ]);
 
-if (process.env.NODE_ENV === 'production') {
-  // Add production-specific logging configuration
-  // Example: Integrate with external logging service
+    for (const [key, value] of Object.entries(sanitizedData)) {
+      if (fieldsToSanitize.has(key.toLowerCase())) {
+        (sanitizedData as any)[key] = '[REDACTED]';
+      } else if (typeof value === 'object' && value !== null) {
+        (sanitizedData as any)[key] = this.sanitizeData(value);
+      }
+    }
+
+    return sanitizedData;
+  }
+
+  debug(message: string, data?: unknown) {
+    if (this.config.logLevel === 'debug') {
+      console.log(
+        '\x1b[36m%s\x1b[0m',
+        '🔍 DEBUG:',
+        this.formatMessage({ message, data }),
+      );
+    }
+  }
+
+  info(message: string, data?: unknown) {
+    console.log(
+      '\x1b[34m%s\x1b[0m',
+      '📘 INFO:',
+      this.formatMessage({ message, data }),
+    );
+  }
+
+  success(message: string, data?: unknown) {
+    console.log(
+      '\x1b[32m%s\x1b[0m',
+      '✅ SUCCESS:',
+      this.formatMessage({ message, data }),
+    );
+  }
+
+  warn(message: string, data?: unknown) {
+    console.warn(
+      '\x1b[33m%s\x1b[0m',
+      '⚠️ WARNING:',
+      this.formatMessage({ message, data }),
+    );
+  }
+
+  error(message: string, error?: unknown) {
+    console.error(
+      '\x1b[31m%s\x1b[0m',
+      '❌ ERROR:',
+      this.formatMessage({ message, error }),
+    );
+  }
+
+  payment = {
+    started: (orderId: string, amount: number, metadata?: unknown) => {
+      this.info('Payment process started', {
+        orderId,
+        amount,
+        metadata,
+        timestamp: new Date().toISOString(),
+      });
+    },
+
+    success: (orderId: string, transactionId: string, data?: unknown) => {
+      this.success('Payment successful', {
+        orderId,
+        transactionId,
+        data,
+        timestamp: new Date().toISOString(),
+      });
+    },
+
+    failed: (orderId: string, error: unknown) => {
+      this.error(`Payment failed for order ${orderId}`, error);
+    },
+
+    webhook: (event: string, data: unknown) => {
+      this.info(`Payment webhook received: ${event}`, {
+        event,
+        data: this.sanitizeData(data),
+        timestamp: new Date().toISOString(),
+      });
+    },
+  };
 }
 
-export type Logger = typeof logger;
+// Exportar una instancia singleton del logger
+export const logger = new Logger({
+  enableConsole: true,
+  logLevel: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
+});

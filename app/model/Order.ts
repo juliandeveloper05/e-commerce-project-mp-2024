@@ -1,30 +1,41 @@
 import mongoose from 'mongoose';
 
-const OrderSchema = new mongoose.Schema({
-  items: [
-    {
-      name: String,
-      price: Number,
-      quantity: Number,
-    },
-  ],
-  buyer: {
-    email: String,
-    name: String,
+const orderSchema = new mongoose.Schema({
+  reference_id: {
+    type: String,
+    required: true,
+    unique: true,
   },
   status: {
     type: String,
-    enum: ['pending', 'approved', 'rejected'],
+    enum: ['pending', 'approved', 'rejected', 'cancelled'],
     default: 'pending',
   },
-  preferenceId: String,
   paymentId: String,
   paymentDetails: mongoose.Schema.Types.Mixed,
-  totalAmount: Number,
+  items: [
+    {
+      _id: String,
+      name: String,
+      price: Number,
+      quantity: Number,
+      size: String,
+    },
+  ],
+  buyer: {
+    id: String,
+    email: String,
+  },
   createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
     type: Date,
     default: Date.now,
   },
 });
 
-export default mongoose.models.Order || mongoose.model('Order', OrderSchema);
+const Order = mongoose.models.Order || mongoose.model('Order', orderSchema);
+
+export default Order;

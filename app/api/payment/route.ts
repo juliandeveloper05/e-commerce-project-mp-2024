@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Preference } from 'mercadopago';
-import { mercadopago } from '../../../app/config/mercadopago';
+import { mercadopago } from '@/app/config/mercadopago';
 import { logger } from '@/app/utils/logger';
 import { ApiError } from '@/app/utils/errors';
 
@@ -19,6 +19,16 @@ interface PaymentRequestBody {
   };
 }
 
+const getBaseUrl = () => {
+  if (process.env.VERCEL_ENV === 'production') {
+    return 'https://mariapancha.vercel.app';
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  return 'http://localhost:3000';
+};
+
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as PaymentRequestBody;
@@ -28,32 +38,48 @@ export async function POST(req: NextRequest) {
     }
 
     const preference = new Preference(mercadopago);
-    const result = await preference.create({
-      body: {
-        items: body.items.map((item) => ({
-          id: item._id,
-          title: item.name,
-          unit_price:
-            process.env.NODE_ENV === 'development' ? 100 : Number(item.price),
-          quantity: Number(item.quantity),
-          currency_id: 'ARS',
-        })),
-        back_urls: {
-          success: `${process.env.NEXT_PUBLIC_API_URL}/payment/success`,
-          failure: `${process.env.NEXT_PUBLIC_API_URL}/payment/failure`,
-          pending: `${process.env.NEXT_PUBLIC_API_URL}/payment/pending`,
-        },
-        auto_return: 'approved',
-        notification_url: `${process.env.NEXT_PUBLIC_API_URL}/api/payment/webhook`,
-        metadata: {
-          buyer_id: body.buyer?.id,
-        },
+    const preferenceData = {
+      items: body.items.map((item) => ({
+        id: item._id,
+        title: item.name,
+        unit_price:
+          process.env.NODE_ENV === 'development' ? 100 : Number(item.price),
+        quantity: Number(item.quantity),
+        currency_id: 'ARS',
+      })),
+      back_urls: {
+        success: `${getBaseUrl()}/payment/success`,
+        failure: `${getBaseUrl()}/payment/failure`,
+        pending: `${getBaseUrl()}/payment/pending`,
       },
+      auto_return: 'approved',
+      notification_url: `${getBaseUrl()}/api/payment/webhook`,
+      statement_descriptor: 'MARIA PANCHA',
+      metadata: {
+        buyer_id: body.buyer?.id,
+        buyer_email: body.buyer?.email,
+      },
+      payer: {
+        email: body.buyer?.email,
+      },
+      payment_methods: {
+        excluded_payment_types: [{ id: 'ticket' }],
+        installments: 1,
+      },
+    };
+
+    logger.info('Creating payment preference', {
+      items: preferenceData.items,
+      buyerId: body.buyer?.id,
+      notificationUrl: preferenceData.notification_url,
     });
+
+    const result = await preference.create({ body: preferenceData });
 
     return NextResponse.json({
       success: true,
       init_point: result.init_point,
+      preference_id: result.id,
     });
   } catch (error) {
     logger.error('Payment creation error', error);

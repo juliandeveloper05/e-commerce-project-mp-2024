@@ -6,56 +6,21 @@ import useSWR from 'swr';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { toast } from 'react-hot-toast';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Share2, Minus, Plus } from 'lucide-react';
 import Link from 'next/link';
 import Head from 'next/head';
 import ProductDetailsCarousel from './components/ProductDetailsCarousel';
 import Loading from '@/app/components/Loading/Loading';
 import ErrorBoundary from '../../components/ErrorBoundary';
 import { useCart } from '@/app/context/CartContext';
-import { useFavorites } from '@/app/context/FavoritesContext';
 import { formatCurrency } from '@/app/utils/format';
-import ActionButtons from '../../components/product/ActionButtons';
 import type { Product } from '../../types/product';
 
-// Configuración de SWR y fetch
-// Configuración de SWR y fetch
 const fetcher = async (url: string) => {
   const res = await fetch(url);
   if (!res.ok) throw new Error('Error al cargar el producto');
   return res.json();
 };
-
-const swrConfig = {
-  revalidateOnFocus: false,
-  revalidateOnReconnect: false,
-  retry: 3,
-  errorRetryInterval: 1000,
-  dedupingInterval: 60000,
-};
-
-// Componente de botón animado reutilizable
-const AnimatedButton = ({
-  onClick,
-  disabled,
-  className,
-  children,
-}: {
-  onClick: () => void;
-  disabled?: boolean;
-  className: string;
-  children: React.ReactNode;
-}) => (
-  <motion.button
-    whileHover={{ scale: disabled ? 1 : 1.02 }}
-    whileTap={{ scale: disabled ? 1 : 0.98 }}
-    onClick={onClick}
-    disabled={disabled}
-    className={className}
-  >
-    {children}
-  </motion.button>
-);
 
 interface ProductDetailsProps {
   slug: string;
@@ -65,11 +30,10 @@ const ProductDetails = ({ slug }: ProductDetailsProps) => {
   const [selectedSize, setSelectedSize] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
-  const [showShareMenu, setShowShareMenu] = useState(false);
 
   const router = useRouter();
   const { addItem } = useCart();
-  const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
+  const { data: session } = useSession();
 
   const {
     data: product,
@@ -82,11 +46,11 @@ const ProductDetails = ({ slug }: ProductDetailsProps) => {
     setQuantity(1);
   }, [slug]);
 
-  const handleAuthRequired = (action: string) => {
+  const handleAuthRequired = () => {
     toast(
       (t) => (
         <div className="flex items-center gap-3">
-          <span>Debes iniciar sesión para {action}</span>
+          <span>Debes iniciar sesión para agregar al carrito</span>
           <button
             onClick={() => {
               toast.dismiss(t.id);
@@ -106,16 +70,17 @@ const ProductDetails = ({ slug }: ProductDetailsProps) => {
   };
 
   const handleAddToCart = async () => {
-    if (!selectedSize || !product) {
-      toast.error('Por favor selecciona una talla', {
-        id: 'size-error',
-      });
-      return;
-    }
-    if (!selectedSize || !product) {
+    if (!selectedSize) {
       toast.error('Por favor selecciona una talla');
       return;
     }
+
+    if (!session) {
+      handleAuthRequired();
+      return;
+    }
+
+    if (!product) return;
 
     setIsAddingToCart(true);
     try {
@@ -129,29 +94,22 @@ const ProductDetails = ({ slug }: ProductDetailsProps) => {
       });
     } catch (error) {
       console.error('Error adding to cart:', error);
-      toast.error('Error al agregar al carrito', {
-        id: 'cart-error',
-      });
+      toast.error('Error al agregar al carrito');
     } finally {
       setIsAddingToCart(false);
     }
   };
 
-  const handleToggleFavorite = async () => {
-    if (!product) return;
-
-    try {
-      const isFavorite = favorites.some((fav) => fav._id === product._id);
-      if (isFavorite) {
-        await removeFromFavorites(product._id);
-        toast.success('Eliminado de favoritos');
-      } else {
-        await addToFavorites(product);
-        toast.success('Agregado a favoritos');
-      }
-    } catch (error) {
-      console.error('Error toggling favorite:', error);
-      toast.error('Error al procesar favoritos');
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: product?.name,
+        text: 'Mira este producto en Maria Pancha',
+        url: window.location.href,
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success('Link copiado al portapapeles');
     }
   };
 
@@ -173,45 +131,19 @@ const ProductDetails = ({ slug }: ProductDetailsProps) => {
   }
   if (!product) return <div>Producto no encontrado</div>;
 
-  const isFavorite = favorites.some((fav) => fav._id === product._id);
-
-  // Schema para SEO
-  const productSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: product.name,
-    description: product.description,
-    image: product.imageSrc,
-    offers: {
-      '@type': 'Offer',
-      price: product.price,
-      priceCurrency: 'ARS',
-      availability: product.stock > 0 ? 'InStock' : 'OutOfStock',
-    },
-  };
-
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
-        <Head>
-          <title>{`${product.name} | Mi Tienda`}</title>
-          <meta name="description" content={product.description} />
-          <meta property="og:image" content={product.imageSrc} />
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
-          />
-        </Head>
-
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <Link href="/productos">
-            <AnimatedButton
-              onClick={() => {}}
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               className="mb-8 flex items-center gap-2 text-gray-600 hover:text-purple-600"
             >
               <ArrowLeft className="h-5 w-5" />
               Volver a productos
-            </AnimatedButton>
+            </motion.button>
           </Link>
 
           <div className="lg:grid lg:grid-cols-2 lg:gap-x-8">
@@ -258,18 +190,20 @@ const ProductDetails = ({ slug }: ProductDetailsProps) => {
                 </div>
                 <div className="mt-4 grid grid-cols-3 gap-4">
                   {['Chico', 'Mediano', 'Grande'].map((size) => (
-                    <AnimatedButton
+                    <motion.button
                       key={size}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={() => setSelectedSize(size)}
-                      className={`flex h-14 items-center justify-center rounded-full border-2 text-sm font-medium transition-all
+                      className={`flex h-[60px] items-center justify-center rounded-full border-2 text-sm font-medium transition-all
                         ${
                           selectedSize === size
                             ? 'border-purple-500 bg-purple-50 text-purple-600'
-                            : 'border-gray-200 text-gray-900 hover:border-purple-500'
+                            : 'border-gray-200 text-gray-900 hover:border-purple-300 hover:bg-purple-50'
                         }`}
                     >
                       {size}
-                    </AnimatedButton>
+                    </motion.button>
                   ))}
                 </div>
               </div>
@@ -277,37 +211,76 @@ const ProductDetails = ({ slug }: ProductDetailsProps) => {
               {/* Selector de cantidad */}
               <div className="mb-8">
                 <h3 className="text-sm font-medium text-gray-900">Cantidad</h3>
-                <div className="mt-4 flex items-center space-x-4">
-                  <AnimatedButton
+                <div className="mt-4 flex items-center gap-4">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="rounded-full bg-gray-100 p-2 text-gray-600 hover:bg-gray-200"
+                    className="flex h-[60px] w-[60px] items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-sm transition-all hover:bg-gray-50 hover:shadow-md"
                   >
-                    -
-                  </AnimatedButton>
+                    <Minus className="h-5 w-5" />
+                  </motion.button>
+
                   <span className="w-12 text-center text-lg font-medium">
                     {quantity}
                   </span>
-                  <AnimatedButton
+
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => setQuantity(quantity + 1)}
-                    className="rounded-full bg-gray-100 p-2 text-gray-600 hover:bg-gray-200"
+                    className="flex h-[60px] w-[60px] items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-sm transition-all hover:bg-gray-50 hover:shadow-md"
                   >
-                    +
-                  </AnimatedButton>
+                    <Plus className="h-5 w-5" />
+                  </motion.button>
                 </div>
               </div>
 
               {/* Botones de acción */}
-              <ActionButtons
-                product={product}
-                onAddToCart={handleAddToCart}
-                onAddToFavorite={handleToggleFavorite}
-                isFavorite={isFavorite}
-                isLoading={isAddingToCart}
-                selectedSize={selectedSize}
-                showShareMenu={showShareMenu}
-                onToggleShare={() => setShowShareMenu(!showShareMenu)}
-                productUrl={window.location.href}
-              />
+              <div className="mt-8 flex w-full flex-col gap-4 sm:flex-row sm:gap-4">
+                {!selectedSize ? (
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() =>
+                      toast.error('Por favor selecciona una talla')
+                    }
+                    className="flex h-[60px] w-full items-center justify-center gap-2 rounded-full bg-gray-400 px-6 text-base font-medium text-white shadow-lg transition-all"
+                  >
+                    <ShoppingCart className="h-5 w-5" />
+                    <span>Selecciona una talla</span>
+                  </motion.button>
+                ) : (
+                  <motion.button
+                    whileHover={{ scale: isAddingToCart ? 1 : 1.02 }}
+                    whileTap={{ scale: isAddingToCart ? 1 : 0.98 }}
+                    onClick={handleAddToCart}
+                    disabled={isAddingToCart}
+                    className={`flex h-[60px] w-full items-center justify-center gap-2 rounded-full px-6 text-base font-medium shadow-lg transition-all sm:flex-1
+                      ${
+                        isAddingToCart
+                          ? 'cursor-not-allowed bg-gray-400 text-white'
+                          : 'bg-purple-600 text-white hover:bg-purple-700 hover:shadow-purple-200'
+                      }
+                      group overflow-hidden`}
+                  >
+                    <ShoppingCart className="h-5 w-5 transition-transform duration-200 group-hover:-translate-y-1 group-hover:scale-110" />
+                    <span className="transition-transform duration-200 group-hover:-translate-y-1">
+                      {isAddingToCart ? 'Agregando...' : 'Agregar al Carrito'}
+                    </span>
+                  </motion.button>
+                )}
+
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleShare}
+                  className="group flex h-[60px] w-full items-center justify-center gap-2 rounded-full border-2 border-purple-200 bg-white px-6 text-base font-medium text-purple-600 shadow-sm transition-all hover:border-purple-300 hover:bg-purple-50 hover:shadow-md sm:w-auto"
+                >
+                  <Share2 className="h-5 w-5 transition-transform duration-200 group-hover:rotate-12" />
+                  <span>Compartir</span>
+                </motion.button>
+              </div>
 
               {/* Detalles adicionales */}
               <div className="mt-8 border-t border-gray-200 pt-8">

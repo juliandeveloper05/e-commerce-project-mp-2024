@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaInstagram, FaFacebook } from 'react-icons/fa';
-import { ShoppingBag, Home, Info, Phone, User, Heart } from 'lucide-react';
+import { ShoppingBag, Home, Phone, User } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -11,7 +11,6 @@ import { useSession } from 'next-auth/react';
 import NavLink from './NavLink';
 import CartButton from '../CartButton';
 import HamburgerIconAnotherVersion from './HamburgerIconAnotherVersion';
-import { useFavorites } from '@/app/context/FavoritesContext';
 
 interface MenuItem {
   title: string;
@@ -24,7 +23,6 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const { data: session } = useSession();
-  const { favorites } = useFavorites();
   const router = useRouter();
 
   const menuItems = [
@@ -106,27 +104,8 @@ const Navbar = () => {
                 ))}
               </ul>
 
-              {/* User, Favorites and Cart Buttons */}
+              {/* User and Cart Buttons */}
               <div className="flex items-center gap-4">
-                <Link href="/favoritos">
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="relative flex items-center gap-2 rounded-full bg-white/90 px-4 py-3 text-purple-600 shadow-sm transition-all hover:bg-purple-50"
-                  >
-                    <Heart className="h-5 w-5" />
-                    {favorites.length > 0 && (
-                      <motion.span
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white"
-                      >
-                        {favorites.length}
-                      </motion.span>
-                    )}
-                  </motion.div>
-                </Link>
-
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -179,28 +158,8 @@ const Navbar = () => {
             className="fixed bottom-0 left-0 right-0 top-0 z-40 bg-white pt-20 lg:hidden"
           >
             <div className="flex h-full flex-col px-6 py-8">
-              {/* Mobile User, Favorites and Cart */}
+              {/* Mobile User and Cart */}
               <div className="mb-8 flex justify-center gap-4">
-                <Link href="/favoritos">
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="relative flex items-center gap-2 rounded-full bg-white/90 px-4 py-3 text-purple-600 shadow-sm transition-all hover:bg-purple-50"
-                    onClick={toggleMenu}
-                  >
-                    <Heart className="h-5 w-5" />
-                    {favorites.length > 0 && (
-                      <motion.span
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white"
-                      >
-                        {favorites.length}
-                      </motion.span>
-                    )}
-                  </motion.div>
-                </Link>
-
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}

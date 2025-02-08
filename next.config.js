@@ -19,6 +19,20 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
+  env: {
+    MERCADOPAGO_ACCESS_TOKEN: process.env.MERCADOPAGO_ACCESS_TOKEN,
+  },
+  // Adding server-side environment configuration
+  serverRuntimeConfig: {
+    mercadoPago: {
+      accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN,
+    },
+  },
+  // Adding public runtime configuration (if needed)
+  publicRuntimeConfig: {
+    // Add any public configuration here
+    isProd: process.env.NODE_ENV === 'production',
+  },
 };
 
 module.exports = nextConfig;

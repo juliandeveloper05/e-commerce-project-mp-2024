@@ -1,10 +1,9 @@
 'use client';
 
 import { createContext, useContext, useReducer, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import { toast } from 'react-hot-toast';
-import { debugLocalStorage } from '@/app/utils/debugStorage';
 
-// Tipos
 interface CartItem {
   _id: string;
   name: string;
@@ -18,6 +17,8 @@ interface CartState {
   items: CartItem[];
   itemCount: number;
   total: number;
+  userId?: string;
+  userEmail?: string;
 }
 
 type CartAction =
@@ -28,17 +29,9 @@ type CartAction =
       payload: { id: string; size: string; quantity: number };
     }
   | { type: 'CLEAR_CART' }
-  | { type: 'LOAD_CART'; payload: CartState };
-
-interface CartContextType {
-  items: CartItem[];
-  itemCount: number;
-  total: number;
-  addItem: (item: CartItem) => Promise<void>;
-  removeItem: (id: string, size: string) => void;
-  updateQuantity: (id: string, size: string, quantity: number) => void;
-  clearCart: () => void;
-}
+  | { type: 'LOAD_CART'; payload: CartState }
+  | { type: 'SET_USER'; payload: { userId: string; userEmail: string } }
+  | { type: 'REMOVE_USER' };
 
 const initialState: CartState = {
   items: [],
@@ -46,15 +39,21 @@ const initialState: CartState = {
   total: 0,
 };
 
-const CartContext = createContext<CartContextType | null>(null);
+const CartContext = createContext<{
+  items: CartItem[];
+  itemCount: number;
+  total: number;
+  userId?: string;
+  userEmail?: string;
+  addItem: (item: CartItem) => Promise<void>;
+  removeItem: (id: string, size: string) => void;
+  updateQuantity: (id: string, size: string, quantity: number) => void;
+  clearCart: () => void;
+} | null>(null);
 
 function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
     case 'ADD_ITEM': {
-      if (!state.items) {
-        state.items = [];
-      }
-
       const existingItemIndex = state.items.findIndex(
         (item) =>
           item._id === action.payload._id && item.size === action.payload.size,
@@ -72,6 +71,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       }
 
       const newState = {
+        ...state,
         items: newItems,
         itemCount: newItems.reduce((sum, item) => sum + item.quantity, 0),
         total: newItems.reduce(
@@ -80,13 +80,14 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         ),
       };
 
-      debugLocalStorage.setItem('cart', JSON.stringify(newState));
+      if (state.userId) {
+        localStorage.setItem(`cart_${state.userId}`, JSON.stringify(newState));
+      }
+
       return newState;
     }
 
     case 'REMOVE_ITEM': {
-      if (!state.items) return state;
-
       const newItems = state.items.filter(
         (item) =>
           !(
@@ -95,6 +96,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       );
 
       const newState = {
+        ...state,
         items: newItems,
         itemCount: newItems.reduce((sum, item) => sum + item.quantity, 0),
         total: newItems.reduce(
@@ -103,13 +105,14 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         ),
       };
 
-      debugLocalStorage.setItem('cart', JSON.stringify(newState));
+      if (state.userId) {
+        localStorage.setItem(`cart_${state.userId}`, JSON.stringify(newState));
+      }
+
       return newState;
     }
 
     case 'UPDATE_QUANTITY': {
-      if (!state.items) return state;
-
       const newItems = state.items.map((item) =>
         item._id === action.payload.id && item.size === action.payload.size
           ? { ...item, quantity: action.payload.quantity }
@@ -117,6 +120,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       );
 
       const newState = {
+        ...state,
         items: newItems,
         itemCount: newItems.reduce((sum, item) => sum + item.quantity, 0),
         total: newItems.reduce(
@@ -125,13 +129,50 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         ),
       };
 
-      debugLocalStorage.setItem('cart', JSON.stringify(newState));
+      if (state.userId) {
+        localStorage.setItem(`cart_${state.userId}`, JSON.stringify(newState));
+      }
+
       return newState;
     }
 
-    case 'CLEAR_CART':
-      debugLocalStorage.removeItem('cart');
+    case 'SET_USER': {
+      const savedCart = localStorage.getItem(`cart_${action.payload.userId}`);
+      if (savedCart) {
+        const parsedCart = JSON.parse(savedCart);
+        return {
+          ...parsedCart,
+          userId: action.payload.userId,
+          userEmail: action.payload.userEmail,
+        };
+      }
+      return {
+        ...initialState,
+        userId: action.payload.userId,
+        userEmail: action.payload.userEmail,
+      };
+    }
+
+    case 'REMOVE_USER': {
+      if (state.userId) {
+        localStorage.setItem(
+          `cart_${state.userId}`,
+          JSON.stringify({
+            ...state,
+            userId: undefined,
+            userEmail: undefined,
+          }),
+        );
+      }
       return initialState;
+    }
+
+    case 'CLEAR_CART': {
+      if (state.userId) {
+        localStorage.removeItem(`cart_${state.userId}`);
+      }
+      return initialState;
+    }
 
     case 'LOAD_CART':
       return action.payload;
@@ -143,52 +184,44 @@ function cartReducer(state: CartState, action: CartAction): CartState {
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, initialState);
+  const { data: session } = useSession();
 
   useEffect(() => {
-    try {
-      const savedCart = debugLocalStorage.getItem('cart');
-      if (savedCart) {
-        dispatch({ type: 'LOAD_CART', payload: JSON.parse(savedCart) });
-      }
-    } catch (error) {
-      console.error('Error loading cart:', error);
-      debugLocalStorage.removeItem('cart');
+    if (session?.user) {
+      dispatch({
+        type: 'SET_USER',
+        payload: {
+          userId: session.user.id,
+          userEmail: session.user.email || '',
+        },
+      });
+    } else {
+      dispatch({ type: 'REMOVE_USER' });
     }
-  }, []);
+  }, [session]);
 
   const addItem = async (item: CartItem) => {
     try {
       dispatch({ type: 'ADD_ITEM', payload: item });
-      toast.success('Producto agregado al carrito', {
-        id: `add-${item._id}-${item.size}`,
-        duration: 2000,
-        position: 'bottom-right',
-      });
+      toast.success('Producto agregado al carrito');
     } catch (error) {
       console.error('Error adding item to cart:', error);
-      toast.error('Error al agregar al carrito', {
-        id: `add-error-${item._id}-${item.size}`,
-      });
+      toast.error('Error al agregar al carrito');
     }
   };
 
   const removeItem = (id: string, size: string) => {
     try {
       dispatch({ type: 'REMOVE_ITEM', payload: { id, size } });
-      // Eliminamos la notificación de aquí para evitar duplicados
     } catch (error) {
       console.error('Error removing item from cart:', error);
-      toast.error('Error al eliminar el producto', {
-        id: `remove-error-${id}-${size}`,
-      });
+      toast.error('Error al eliminar el producto');
     }
   };
 
   const updateQuantity = (id: string, size: string, quantity: number) => {
     if (quantity < 1) {
-      toast.error('La cantidad debe ser al menos 1', {
-        id: `quantity-error-${id}-${size}`,
-      });
+      toast.error('La cantidad debe ser al menos 1');
       return;
     }
 
@@ -196,37 +229,37 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       dispatch({ type: 'UPDATE_QUANTITY', payload: { id, size, quantity } });
     } catch (error) {
       console.error('Error updating quantity:', error);
-      toast.error('Error al actualizar la cantidad', {
-        id: `update-error-${id}-${size}`,
-      });
+      toast.error('Error al actualizar la cantidad');
     }
   };
 
   const clearCart = () => {
     try {
       dispatch({ type: 'CLEAR_CART' });
-      toast.success('Carrito vaciado', {
-        id: 'clear-cart',
-      });
+      toast.success('Carrito vaciado');
     } catch (error) {
       console.error('Error clearing cart:', error);
-      toast.error('Error al vaciar el carrito', {
-        id: 'clear-cart-error',
-      });
+      toast.error('Error al vaciar el carrito');
     }
   };
 
-  const value: CartContextType = {
-    items: state.items,
-    itemCount: state.itemCount,
-    total: state.total,
-    addItem,
-    removeItem,
-    updateQuantity,
-    clearCart,
-  };
-
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+  return (
+    <CartContext.Provider
+      value={{
+        items: state.items,
+        itemCount: state.itemCount,
+        total: state.total,
+        userId: state.userId,
+        userEmail: state.userEmail,
+        addItem,
+        removeItem,
+        updateQuantity,
+        clearCart,
+      }}
+    >
+      {children}
+    </CartContext.Provider>
+  );
 }
 
 export const useCart = () => {
@@ -235,31 +268,4 @@ export const useCart = () => {
     throw new Error('useCart must be used within a CartProvider');
   }
   return context;
-};
-
-// Hook opcional para manejar las notificaciones del carrito
-export const useCartNotifications = () => {
-  return {
-    notifyAdded: (id: string, size: string) => {
-      toast.success('Producto agregado al carrito', {
-        id: `add-${id}-${size}`,
-        duration: 2000,
-        position: 'bottom-right',
-      });
-    },
-    notifyRemoved: (id: string, size: string) => {
-      toast.success('Producto eliminado del carrito', {
-        id: `remove-${id}-${size}`,
-        duration: 2000,
-        position: 'bottom-right',
-      });
-    },
-    notifyError: (message: string, id: string) => {
-      toast.error(message, {
-        id,
-        duration: 2000,
-        position: 'bottom-right',
-      });
-    },
-  };
 };

@@ -11,6 +11,7 @@ import {
   MessageSquare,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { useCart } from '@/app/context/CartContext';
 import type { CartItem } from '@/app/types/cart';
 
 interface CheckoutFormProps {
@@ -21,16 +22,17 @@ interface CheckoutFormProps {
 
 const CheckoutForm = ({ items, total, userEmail }: CheckoutFormProps) => {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    address: '',
-    comments: '',
-  });
+  const { clearCart } = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    nombre: '',
+    telefono: '',
+    direccion: '',
+    comentarios: '',
+  });
 
-  const formatWhatsAppMessage = () => {
-    const itemsList = items
+  const formatMensajeWhatsApp = () => {
+    const listaProductos = items
       .map(
         (item) =>
           `• ${item.name} (Talla: ${item.size}) x${item.quantity} - $${
@@ -39,31 +41,31 @@ const CheckoutForm = ({ items, total, userEmail }: CheckoutFormProps) => {
       )
       .join('\n');
 
-    const message = `*🛍️ Nuevo Pedido - Maria Pancha*
+    const mensaje = `*🛍️ Nuevo Pedido - Maria Pancha*
 ------------------
-*👤 Cliente:* ${formData.name}
+*👤 Cliente:* ${formData.nombre}
 *📧 Email:* ${userEmail}
-*📱 Teléfono:* ${formData.phone}
-*📍 Dirección:* ${formData.address}
+*📱 Teléfono:* ${formData.telefono}
+*📍 Dirección:* ${formData.direccion}
 
 *📝 Productos:*
-${itemsList}
+${listaProductos}
 
 *💰 Total:* $${total}
 
 *📌 Comentarios:*
-${formData.comments || 'Sin comentarios'}
+${formData.comentarios || 'Sin comentarios'}
 
 _Pedido generado desde la tienda online_`;
 
-    return encodeURIComponent(message);
+    return encodeURIComponent(mensaje);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.phone || !formData.address) {
-      toast.error('Por favor completa todos los campos requeridos');
+    if (!formData.nombre || !formData.telefono || !formData.direccion) {
+      toast.error('Por favor completa todos los campos obligatorios');
       return;
     }
 
@@ -83,7 +85,7 @@ _Pedido generado desde la tienda online_`;
       });
 
       if (!orderResponse.ok) {
-        throw new Error('Error al crear la orden');
+        throw new Error('Error al crear el pedido');
       }
 
       const { orderId } = await orderResponse.json();
@@ -107,17 +109,18 @@ _Pedido generado desde la tienda online_`;
         console.error('Error al enviar email, pero continuamos el proceso');
       }
 
-      // 3. Abrir WhatsApp
-      const whatsappMessage = formatWhatsAppMessage();
-      const whatsappUrl = `https://wa.me/5491126625292?text=${whatsappMessage}`;
-      console.log('Opening WhatsApp with URL:', whatsappUrl);
-      window.open(whatsappUrl, '_blank');
+      // 3. Limpiar carrito
+      clearCart();
 
-      // 4. Mostrar mensaje de éxito
-      toast.success('¡Pedido enviado! Continúa en WhatsApp');
+      // 4. Abrir WhatsApp
+      const whatsappMessage = formatMensajeWhatsApp();
+      window.open(
+        `https://wa.me/5491126625292?text=${whatsappMessage}`,
+        '_blank',
+      );
 
-      // 5. Redirigir a página de confirmación
-      router.push('/order-confirmation');
+      // 5. Redirigir a página de éxito
+      router.push('/pedido-exitoso');
     } catch (error) {
       console.error('Error procesando pedido:', error);
       toast.error('Hubo un error al procesar tu pedido');
@@ -137,8 +140,8 @@ _Pedido generado desde la tienda online_`;
         <input
           type="text"
           required
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          value={formData.nombre}
+          onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
           className="w-full rounded-lg border-2 border-purple-100 px-4 py-2 focus:border-purple-500 focus:outline-none focus:ring-purple-500"
           placeholder="Tu nombre completo"
         />
@@ -153,8 +156,10 @@ _Pedido generado desde la tienda online_`;
         <input
           type="tel"
           required
-          value={formData.phone}
-          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+          value={formData.telefono}
+          onChange={(e) =>
+            setFormData({ ...formData, telefono: e.target.value })
+          }
           className="w-full rounded-lg border-2 border-purple-100 px-4 py-2 focus:border-purple-500 focus:outline-none focus:ring-purple-500"
           placeholder="Tu número de teléfono"
         />
@@ -168,9 +173,9 @@ _Pedido generado desde la tienda online_`;
         </label>
         <textarea
           required
-          value={formData.address}
+          value={formData.direccion}
           onChange={(e) =>
-            setFormData({ ...formData, address: e.target.value })
+            setFormData({ ...formData, direccion: e.target.value })
           }
           className="w-full rounded-lg border-2 border-purple-100 px-4 py-2 focus:border-purple-500 focus:outline-none focus:ring-purple-500"
           rows={3}
@@ -185,9 +190,9 @@ _Pedido generado desde la tienda online_`;
           Comentarios Adicionales
         </label>
         <textarea
-          value={formData.comments}
+          value={formData.comentarios}
           onChange={(e) =>
-            setFormData({ ...formData, comments: e.target.value })
+            setFormData({ ...formData, comentarios: e.target.value })
           }
           className="w-full rounded-lg border-2 border-purple-100 px-4 py-2 focus:border-purple-500 focus:outline-none focus:ring-purple-500"
           rows={3}
